@@ -1,0 +1,63 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Launch ForArray",
+            "request": "launch",
+            "mainClass": "ForArray",
+            "projectName": "ExercicioCaixaEletronico_2720a46b"
+        },
+        {
+            "type": "java",
+            "name": "Launch joguinho",
+            "request": "launch",
+            "mainClass": "joguinho",
+            "projectName": "ExercicioCaixaEletronico_2720a46b"
+        },
+        {
+            "type": "java",
+            "name": "Launch Caixa",
+            "request": "launch",
+            "mainClass": "Caixa",
+            "projectName": "ExercicioCaixaEletronico_2720a46b"
+        },
+        {
+            "type": "java",
+            "name": "Launch thigas",
+            "request": "launch",
+            "mainClass": "thigas",
+            "projectName": "ExercicioCaixaEletronico_2720a46b"
+        },
+        {
+            "type": "java",
+            "name": "Launch Current File",
+            "request": "launch",
+            "mainClass": "${file}"
+        },
+        {
+            "type": "java",
+            "name": "Launch App",
+            "request": "launch",
+            "mainClass": "App",
+            "projectName": "ExercicioCaixaEletronico_2720a46b"
+        },
+        {
+            "type": "java",
+            "name": "Launch CaixaEletronico",
+            "request": "launch",
+            "mainClass": "CaixaEletronico",
+            "projectName": "ExercicioCaixaEletronico_2720a46b"
+        },
+        {
+            "type": "java",
+            "name": "Launch oi",
+            "request": "launch",
+            "mainClass": "oi",
+            "projectName": "ExercicioCaixaEletronico_2720a46b"
+        }
+    ]
+}
