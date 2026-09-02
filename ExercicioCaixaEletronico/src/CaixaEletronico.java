@@ -26,7 +26,7 @@ public class CaixaEletronico {
  
          while (nomeInput != nome) {
              System.out.println("Informe o seu nome:");
-                     nomeInput = scanner.next(); 
+                     nomeInput = scanner.nextLine();
                   if (nomeInput.equals(nome)) {      
                      System.out.println("Seja bem vindo, " + nome + ".");
                          break;
