@@ -53,7 +53,6 @@ public class CaixaEletronico {
              System.out.println("Informe o número da agência:");
               agenciaInput = scanner.nextInt();
  
-              System.out.println("Conta localizada com sucesso, " + nome + " bem vindo ao " + banco);
  
               
          if (agenciaInput ==agencia) {
