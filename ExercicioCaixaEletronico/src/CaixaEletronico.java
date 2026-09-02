@@ -1,6 +1,9 @@
+import java.util.Scanner;
+
 public class CaixaEletronico {
  
-  public static void main(String[] args) {    
+  public static void main(String[] args) {
+  }
     
     
     String nome = "Lucas Rios de Souza Jordão";
@@ -97,6 +100,4 @@ public class CaixaEletronico {
      }
  
      
-    }
- 
  }
