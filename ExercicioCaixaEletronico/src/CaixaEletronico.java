@@ -91,6 +91,12 @@ public class CaixaEletronico {
  
          System.out.println("Informe o valor do depósito:");
              deposito = scanner.nextDouble();
+
+         if (deposito <= 0) {
+             System.out.println("O valor do depósito deve ser maior que zero");
+             return;
+         }
+
              saldoFinal = saldoFinal + deposito;
          System.out.println(nome + " seu depósito de " + " R$ " + deposito + " foi realizado com sucesso!");
          System.out.println();
