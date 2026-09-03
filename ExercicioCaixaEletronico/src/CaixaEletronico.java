@@ -24,12 +24,11 @@ public class CaixaEletronico {
      public void identificadorUsuario() {
          Scanner scanner = new Scanner(System.in);
  
-         while (nomeInput != nome) {
+         while (!nome.equals(nomeInput)) {
              System.out.println("Informe o seu nome:");
                      nomeInput = scanner.nextLine();
                   if (nomeInput.equals(nome)) {      
                      System.out.println("Seja bem vindo, " + nome + ".");
-                         break;
                  } else {
                      System.out.println("Usuário não reconhecido!");
                  }
@@ -37,13 +36,12 @@ public class CaixaEletronico {
          o input esperado, ele vai me dar boas vindas para o usuário e vai sair do loop.
          */
  
-         while (bancoInput != banco) {
+         while (!banco.equals(bancoInput)) {
              System.out.println("Informe o nome do banco:");
                bancoInput = scanner.next();
  
          if (bancoInput.equals(banco)) {
              System.out.println("Seja bem-vindo, " + nome + " ao " + banco);
-                 break;
          }else {
              System.out.println("Banco não reconhecido!");;
          }
