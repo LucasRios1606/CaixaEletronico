@@ -13,7 +13,7 @@ public class CaixaEletronico {
     int agencia = 12345;
     int agenciaInput;
      double saldo = 50000;
-     double saldoFinal;
+     double saldoFinal = saldo;
      double saque;
      double deposito;
      
