@@ -75,7 +75,9 @@ public class CaixaEletronico {
          System.out.println(nome + " Informe o valor que deseja sacar!");
                  saque = scanner.nextDouble();
  
-         if (saque > saldo) {
+         if (saque <= 0) {
+             System.out.println("O valor do saque deve ser maior que zero");
+         } else if (saque > saldo) {
              System.out.println("Saldo indisponível");
          } else {
              saldoFinal = saldo - saque;
