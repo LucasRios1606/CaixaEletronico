@@ -77,10 +77,10 @@ public class CaixaEletronico {
  
          if (saque <= 0) {
              System.out.println("O valor do saque deve ser maior que zero");
-         } else if (saque > saldo) {
+         } else if (saque > saldoFinal) {
              System.out.println("Saldo indisponível");
          } else {
-             saldoFinal = saldo - saque;
+             saldoFinal = saldoFinal - saque;
              System.out.println("Saque realizado com sucesso, seu saldo atual é de: " + " R$ " + saldoFinal);
          }
       
