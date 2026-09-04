@@ -18,14 +18,13 @@ public class CaixaEletronico {
      double saldoFinal = saldo;
      double saque;
      double deposito;
+     Scanner scanner = new Scanner(System.in);
      
  
  /**
   * O método identificadorUsuario foi criado para validar o usuário, o nome do banco e a agência. 
   */
      public void identificadorUsuario() {
-         Scanner scanner = new Scanner(System.in);
- 
          while (!nome.equals(nomeInput)) {
              System.out.println("Informe o seu nome:");
                      nomeInput = scanner.nextLine();
@@ -70,8 +69,6 @@ public class CaixaEletronico {
  
  
      public void saldo() {
-         Scanner scanner = new Scanner(System.in);
- 
          System.out.println(nome + " Informe o valor que deseja sacar!");
                  saque = scanner.nextDouble();
  
@@ -87,8 +84,6 @@ public class CaixaEletronico {
      }
  
      public void deposito() {
-         Scanner scanner = new Scanner(System.in);
- 
          System.out.println("Informe o valor do depósito:");
              deposito = scanner.nextDouble();
 
