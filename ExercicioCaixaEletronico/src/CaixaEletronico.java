@@ -3,6 +3,8 @@ import java.util.Scanner;
 public class CaixaEletronico {
  
   public static void main(String[] args) {
+      CaixaEletronico caixa = new CaixaEletronico();
+      caixa.identificadorUsuario();
   }
     
     
