@@ -4,8 +4,9 @@ public class CaixaEletronico {
  
   public static void main(String[] args) {
       CaixaEletronico caixa = new CaixaEletronico();
-      caixa.identificadorUsuario();
-      caixa.menu();
+      if (caixa.identificadorUsuario()) {
+          caixa.menu();
+      }
   }
     
     
@@ -25,9 +26,12 @@ public class CaixaEletronico {
  /**
   * O método identificadorUsuario foi criado para validar o usuário, o nome do banco e a agência. 
   */
-     public void identificadorUsuario() {
+     public boolean identificadorUsuario() {
          while (!nome.equals(nomeInput)) {
              System.out.println("Informe o seu nome:");
+             if (!scanner.hasNextLine()) {
+                 return false;
+             }
                      nomeInput = scanner.nextLine();
                   if (nomeInput.equals(nome)) {      
                      System.out.println("Seja bem vindo, " + nome + ".");
@@ -40,6 +44,9 @@ public class CaixaEletronico {
  
          while (!banco.equals(bancoInput)) {
              System.out.println("Informe o nome do banco:");
+             if (!scanner.hasNext()) {
+                 return false;
+             }
                bancoInput = scanner.next();
  
          if (bancoInput.equals(banco)) {
@@ -51,6 +58,14 @@ public class CaixaEletronico {
  
          while (agenciaInput != agencia) {
              System.out.println("Informe o número da agência:");
+             if (!scanner.hasNext()) {
+                 return false;
+             }
+             if (!scanner.hasNextInt()) {
+                 scanner.next();
+                 System.out.println("Informe um número inteiro válido para a agência.");
+                 continue;
+             }
               agenciaInput = scanner.nextInt();
  
  
@@ -63,6 +78,7 @@ public class CaixaEletronico {
          }   
          }
  
+     return true;
  }
      /**
       * O método menu permite escolher as operações após identificar o usuário.
