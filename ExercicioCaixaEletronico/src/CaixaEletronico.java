@@ -1,3 +1,5 @@
+import java.text.NumberFormat;
+import java.util.Locale;
 import java.util.Scanner;
 
 public class CaixaEletronico {
@@ -21,6 +23,7 @@ public class CaixaEletronico {
      double saque;
      double deposito;
      Scanner scanner = new Scanner(System.in);
+     NumberFormat moeda = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("pt-BR"));
      
  
  /**
@@ -106,7 +109,7 @@ public class CaixaEletronico {
 
              switch (opcao) {
                  case 1:
-                     System.out.println("Saldo atual de sua conta R$ " + saldoFinal);
+                     System.out.println("Saldo atual de sua conta " + moeda.format(saldoFinal));
                      break;
                  case 2:
                      saldo();
@@ -144,7 +147,7 @@ public class CaixaEletronico {
              System.out.println("Saldo indisponível");
          } else {
              saldoFinal = saldoFinal - saque;
-             System.out.println("Saque realizado com sucesso, seu saldo atual é de: " + " R$ " + saldoFinal);
+             System.out.println("Saque realizado com sucesso, seu saldo atual é de: " + moeda.format(saldoFinal));
          }
       
      }
@@ -170,9 +173,9 @@ public class CaixaEletronico {
          }
 
              saldoFinal = saldoFinal + deposito;
-         System.out.println(nome + " seu depósito de " + " R$ " + deposito + " foi realizado com sucesso!");
+         System.out.println(nome + " seu depósito de " + moeda.format(deposito) + " foi realizado com sucesso!");
          System.out.println();
-         System.out.println("Saldo atual de sua conta " + " R$ " + saldoFinal);
+         System.out.println("Saldo atual de sua conta " + moeda.format(saldoFinal));
  
  
  
