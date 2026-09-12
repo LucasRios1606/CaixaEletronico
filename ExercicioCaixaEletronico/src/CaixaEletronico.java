@@ -5,6 +5,7 @@ public class CaixaEletronico {
   public static void main(String[] args) {
       CaixaEletronico caixa = new CaixaEletronico();
       caixa.identificadorUsuario();
+      caixa.menu();
   }
     
     
@@ -64,10 +65,48 @@ public class CaixaEletronico {
  
  }
      /**
-      * O método saldo foi criado para criar o sistema de saque, ele pergunta o valor que deseja ser sacado e informa se a operação for concluída ou não.
+      * O método menu permite escolher as operações após identificar o usuário.
       */
  
  
+     public void menu() {
+         int opcao;
+         do {
+             System.out.println("1 - Consultar saldo");
+             System.out.println("2 - Sacar");
+             System.out.println("3 - Depositar");
+             System.out.println("0 - Sair");
+             System.out.println("Escolha uma opção:");
+
+             if (!scanner.hasNext()) {
+                 return;
+             }
+             if (!scanner.hasNextInt()) {
+                 scanner.next();
+                 System.out.println("Opção inválida!");
+                 continue;
+             }
+             opcao = scanner.nextInt();
+
+             switch (opcao) {
+                 case 1:
+                     System.out.println("Saldo atual de sua conta R$ " + saldoFinal);
+                     break;
+                 case 2:
+                     saldo();
+                     break;
+                 case 3:
+                     deposito();
+                     break;
+                 case 0:
+                     System.out.println("Obrigado por utilizar nosso caixa eletrônico!");
+                     return;
+                 default:
+                     System.out.println("Opção inválida!");
+             }
+         } while (true);
+     }
+
      public void saldo() {
          System.out.println(nome + " Informe o valor que deseja sacar!");
                  saque = scanner.nextDouble();
