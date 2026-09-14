@@ -30,13 +30,13 @@ public class CaixaEletronico {
   * O método identificadorUsuario foi criado para validar o usuário, o nome do banco e a agência. 
   */
      public boolean identificadorUsuario() {
-         while (!nome.equals(nomeInput)) {
+         while (!nome.equalsIgnoreCase(nomeInput)) {
              System.out.println("Informe o seu nome:");
              if (!scanner.hasNextLine()) {
                  return false;
              }
                      nomeInput = scanner.nextLine().trim();
-                  if (nomeInput.equals(nome)) {      
+                  if (nome.equalsIgnoreCase(nomeInput)) {
                      System.out.println("Seja bem vindo, " + nome + ".");
                  } else {
                      System.out.println("Usuário não reconhecido!");
@@ -45,14 +45,14 @@ public class CaixaEletronico {
          o input esperado, ele vai me dar boas vindas para o usuário e vai sair do loop.
          */
  
-         while (!banco.equals(bancoInput)) {
+         while (!banco.equalsIgnoreCase(bancoInput)) {
              System.out.println("Informe o nome do banco:");
              if (!scanner.hasNextLine()) {
                  return false;
              }
                bancoInput = scanner.nextLine().trim();
  
-         if (bancoInput.equals(banco)) {
+         if (banco.equalsIgnoreCase(bancoInput)) {
              System.out.println("Seja bem-vindo, " + nome + " ao " + banco);
          }else {
              System.out.println("Banco não reconhecido!");;
