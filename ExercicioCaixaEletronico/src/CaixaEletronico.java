@@ -112,7 +112,7 @@ public class CaixaEletronico {
                      System.out.println("Saldo atual de sua conta " + moeda.format(saldoFinal));
                      break;
                  case 2:
-                     saldo();
+                     sacar();
                      break;
                  case 3:
                      deposito();
@@ -126,7 +126,7 @@ public class CaixaEletronico {
          } while (true);
      }
 
-     public void saldo() {
+     public void sacar() {
          System.out.println(nome + " Informe o valor que deseja sacar!");
          if (!scanner.hasNextDouble()) {
              if (scanner.hasNext()) {
