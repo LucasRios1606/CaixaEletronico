@@ -35,7 +35,7 @@ public class CaixaEletronico {
              if (!scanner.hasNextLine()) {
                  return false;
              }
-                     nomeInput = scanner.nextLine();
+                     nomeInput = scanner.nextLine().trim();
                   if (nomeInput.equals(nome)) {      
                      System.out.println("Seja bem vindo, " + nome + ".");
                  } else {
@@ -47,10 +47,10 @@ public class CaixaEletronico {
  
          while (!banco.equals(bancoInput)) {
              System.out.println("Informe o nome do banco:");
-             if (!scanner.hasNext()) {
+             if (!scanner.hasNextLine()) {
                  return false;
              }
-               bancoInput = scanner.next();
+               bancoInput = scanner.nextLine().trim();
  
          if (bancoInput.equals(banco)) {
              System.out.println("Seja bem-vindo, " + nome + " ao " + banco);
