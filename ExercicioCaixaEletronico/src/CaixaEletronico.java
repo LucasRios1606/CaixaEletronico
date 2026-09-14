@@ -172,7 +172,13 @@ public class CaixaEletronico {
              return;
          }
 
-             saldoFinal = saldoFinal + deposito;
+         double novoSaldo = saldoFinal + deposito;
+         if (!Double.isFinite(novoSaldo)) {
+             System.out.println("O depósito ultrapassa o limite de saldo permitido.");
+             return;
+         }
+
+         saldoFinal = novoSaldo;
          System.out.println(nome + " seu depósito de " + moeda.format(deposito) + " foi realizado com sucesso!");
          System.out.println();
          System.out.println("Saldo atual de sua conta " + moeda.format(saldoFinal));
