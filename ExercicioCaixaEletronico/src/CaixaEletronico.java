@@ -1,4 +1,6 @@
 import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Scanner;
 
@@ -24,6 +26,7 @@ public class CaixaEletronico {
      double deposito;
      Scanner scanner = new Scanner(System.in);
      NumberFormat moeda = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("pt-BR"));
+     List<String> movimentacoes = new ArrayList<>();
      
  
  /**
@@ -94,6 +97,7 @@ public class CaixaEletronico {
              System.out.println("1 - Consultar saldo");
              System.out.println("2 - Sacar");
              System.out.println("3 - Depositar");
+             System.out.println("4 - Ver histórico de movimentações");
              System.out.println("0 - Sair");
              System.out.println("Escolha uma opção:");
 
@@ -117,6 +121,9 @@ public class CaixaEletronico {
                  case 3:
                      deposito();
                      break;
+                 case 4:
+                     mostrarHistorico();
+                     break;
                  case 0:
                      System.out.println("Obrigado por utilizar nosso caixa eletrônico!");
                      return;
@@ -124,6 +131,17 @@ public class CaixaEletronico {
                      System.out.println("Opção inválida!");
              }
          } while (true);
+     }
+
+     public void mostrarHistorico() {
+         System.out.println("Histórico de movimentações desta execução:");
+         if (movimentacoes.isEmpty()) {
+             System.out.println("Nenhuma movimentação realizada.");
+             return;
+         }
+         for (String movimentacao : movimentacoes) {
+             System.out.println(movimentacao);
+         }
      }
 
      public void sacar() {
@@ -147,6 +165,7 @@ public class CaixaEletronico {
              System.out.println("Saldo indisponível");
          } else {
              saldoFinal = saldoFinal - saque;
+             movimentacoes.add("Saque: " + moeda.format(saque) + " | Saldo: " + moeda.format(saldoFinal));
              System.out.println("Saque realizado com sucesso, seu saldo atual é de: " + moeda.format(saldoFinal));
          }
       
@@ -179,6 +198,7 @@ public class CaixaEletronico {
          }
 
          saldoFinal = novoSaldo;
+         movimentacoes.add("Depósito: " + moeda.format(deposito) + " | Saldo: " + moeda.format(saldoFinal));
          System.out.println(nome + " seu depósito de " + moeda.format(deposito) + " foi realizado com sucesso!");
          System.out.println();
          System.out.println("Saldo atual de sua conta " + moeda.format(saldoFinal));
