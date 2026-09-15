@@ -173,6 +173,12 @@ public class CaixaEletronico {
          } else if (saque > saldoFinal) {
              System.out.println("Saldo indisponível");
          } else {
+             System.out.println("Confirmar saque de " + moeda.format(saque)
+                     + "? Digite S para confirmar ou outro valor para cancelar:");
+             if (!scanner.hasNext() || !scanner.next().equalsIgnoreCase("S")) {
+                 System.out.println("Saque cancelado.");
+                 return;
+             }
              saldoFinal = saldoFinal - saque;
              registrarMovimentacao("Saque", saque);
              System.out.println("Saque realizado com sucesso, seu saldo atual é de: " + moeda.format(saldoFinal));
