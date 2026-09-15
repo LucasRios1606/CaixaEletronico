@@ -1,4 +1,6 @@
 import java.text.NumberFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -27,6 +29,7 @@ public class CaixaEletronico {
      Scanner scanner = new Scanner(System.in);
      NumberFormat moeda = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("pt-BR"));
      List<String> movimentacoes = new ArrayList<>();
+     DateTimeFormatter formatoDataHora = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
      
  
  /**
@@ -133,6 +136,12 @@ public class CaixaEletronico {
          } while (true);
      }
 
+     private void registrarMovimentacao(String tipo, double valor) {
+         String dataHora = LocalDateTime.now().format(formatoDataHora);
+         movimentacoes.add(dataHora + " | " + tipo + ": " + moeda.format(valor)
+                 + " | Saldo: " + moeda.format(saldoFinal));
+     }
+
      public void mostrarHistorico() {
          System.out.println("Histórico de movimentações desta execução:");
          if (movimentacoes.isEmpty()) {
@@ -165,7 +174,7 @@ public class CaixaEletronico {
              System.out.println("Saldo indisponível");
          } else {
              saldoFinal = saldoFinal - saque;
-             movimentacoes.add("Saque: " + moeda.format(saque) + " | Saldo: " + moeda.format(saldoFinal));
+             registrarMovimentacao("Saque", saque);
              System.out.println("Saque realizado com sucesso, seu saldo atual é de: " + moeda.format(saldoFinal));
          }
       
@@ -198,7 +207,7 @@ public class CaixaEletronico {
          }
 
          saldoFinal = novoSaldo;
-         movimentacoes.add("Depósito: " + moeda.format(deposito) + " | Saldo: " + moeda.format(saldoFinal));
+         registrarMovimentacao("Depósito", deposito);
          System.out.println(nome + " seu depósito de " + moeda.format(deposito) + " foi realizado com sucesso!");
          System.out.println();
          System.out.println("Saldo atual de sua conta " + moeda.format(saldoFinal));
