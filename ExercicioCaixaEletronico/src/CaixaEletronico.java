@@ -212,6 +212,13 @@ public class CaixaEletronico {
              return;
          }
 
+         System.out.println("Confirmar depósito de " + moeda.format(deposito)
+                 + "? Digite S para confirmar ou outro valor para cancelar:");
+         if (!scanner.hasNext() || !scanner.next().equalsIgnoreCase("S")) {
+             System.out.println("Depósito cancelado.");
+             return;
+         }
+
          saldoFinal = novoSaldo;
          registrarMovimentacao("Depósito", deposito);
          System.out.println(nome + " seu depósito de " + moeda.format(deposito) + " foi realizado com sucesso!");
