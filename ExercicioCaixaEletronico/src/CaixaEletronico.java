@@ -191,7 +191,9 @@ public class CaixaEletronico {
          if (saque <= 0) {
              System.out.println("O valor do saque deve ser maior que zero");
          } else if (saque > saldoFinal) {
-             System.out.println("Saldo indisponível");
+             System.out.println("Saldo insuficiente para realizar o saque.");
+             System.out.println("Saldo disponível: " + moeda.format(saldoFinal));
+             System.out.println("Valor que falta: " + moeda.format(saque - saldoFinal));
          } else {
              double novoSaldo = saldoFinal - saque;
              System.out.println("Saldo após o saque, se confirmado: " + moeda.format(novoSaldo));
