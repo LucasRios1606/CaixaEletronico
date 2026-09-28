@@ -173,13 +173,15 @@ public class CaixaEletronico {
          } else if (saque > saldoFinal) {
              System.out.println("Saldo indisponível");
          } else {
+             double novoSaldo = saldoFinal - saque;
+             System.out.println("Saldo após o saque, se confirmado: " + moeda.format(novoSaldo));
              System.out.println("Confirmar saque de " + moeda.format(saque)
                      + "? Digite S para confirmar ou outro valor para cancelar:");
              if (!scanner.hasNext() || !scanner.next().equalsIgnoreCase("S")) {
                  System.out.println("Saque cancelado.");
                  return;
              }
-             saldoFinal = saldoFinal - saque;
+             saldoFinal = novoSaldo;
              registrarMovimentacao("Saque", saque);
              System.out.println("Saque realizado com sucesso, seu saldo atual é de: " + moeda.format(saldoFinal));
          }
@@ -212,6 +214,7 @@ public class CaixaEletronico {
              return;
          }
 
+         System.out.println("Saldo após o depósito, se confirmado: " + moeda.format(novoSaldo));
          System.out.println("Confirmar depósito de " + moeda.format(deposito)
                  + "? Digite S para confirmar ou outro valor para cancelar:");
          if (!scanner.hasNext() || !scanner.next().equalsIgnoreCase("S")) {
