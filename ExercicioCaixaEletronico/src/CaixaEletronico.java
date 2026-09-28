@@ -130,6 +130,15 @@ public class CaixaEletronico {
                      mostrarHistorico();
                      break;
                  case 0:
+                     System.out.println("Ao sair, o saldo e o histórico desta execução não serão salvos.");
+                     System.out.println("Deseja sair? Digite S para confirmar ou outro valor para voltar ao menu:");
+                     if (!scanner.hasNext()) {
+                         return;
+                     }
+                     if (!scanner.next().equalsIgnoreCase("S")) {
+                         System.out.println("Saída cancelada.");
+                         break;
+                     }
                      System.out.println("Obrigado por utilizar nosso caixa eletrônico!");
                      return;
                  default:
