@@ -1,3 +1,4 @@
+import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -182,6 +183,11 @@ public class CaixaEletronico {
              return;
          }
  
+         if (BigDecimal.valueOf(saque).stripTrailingZeros().scale() > 2) {
+             System.out.println("Informe um valor com no máximo duas casas decimais para o saque.");
+             return;
+         }
+
          if (saque <= 0) {
              System.out.println("O valor do saque deve ser maior que zero");
          } else if (saque > saldoFinal) {
@@ -215,6 +221,11 @@ public class CaixaEletronico {
              deposito = scanner.nextDouble();
          if (!Double.isFinite(deposito)) {
              System.out.println("Informe um valor válido para o depósito.");
+             return;
+         }
+
+         if (BigDecimal.valueOf(deposito).stripTrailingZeros().scale() > 2) {
+             System.out.println("Informe um valor com no máximo duas casas decimais para o depósito.");
              return;
          }
 
