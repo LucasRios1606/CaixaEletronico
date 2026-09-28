@@ -29,7 +29,7 @@ public class CaixaEletronico {
      double deposito;
      double totalSacado = 0;
      double totalDepositado = 0;
-     Scanner scanner = new Scanner(System.in);
+     Scanner scanner = new Scanner(System.in).useLocale(Locale.forLanguageTag("pt-BR"));
      NumberFormat moeda = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("pt-BR"));
      List<String> movimentacoes = new ArrayList<>();
      DateTimeFormatter formatoDataHora = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
@@ -169,7 +169,7 @@ public class CaixaEletronico {
      }
 
      public void sacar() {
-         System.out.println(nome + " Informe o valor que deseja sacar!");
+         System.out.println(nome + " Informe o valor que deseja sacar (exemplo: 10,50)!");
          if (!scanner.hasNextDouble()) {
              if (scanner.hasNext()) {
                  scanner.next();
@@ -210,7 +210,7 @@ public class CaixaEletronico {
      }
  
      public void deposito() {
-         System.out.println("Informe o valor do depósito:");
+         System.out.println("Informe o valor do depósito (exemplo: 10,50):");
          if (!scanner.hasNextDouble()) {
              if (scanner.hasNext()) {
                  scanner.next();
