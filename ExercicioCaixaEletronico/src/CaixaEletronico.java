@@ -176,7 +176,7 @@ public class CaixaEletronico {
      }
 
      public void sacar() {
-         System.out.println(nome + " Informe o valor que deseja sacar (exemplo: 10,50)!");
+         System.out.println(nome + " Informe o valor que deseja sacar (exemplo: 10,50) ou 0 para cancelar:");
          if (!scanner.hasNextDouble()) {
              if (scanner.hasNext()) {
                  scanner.next();
@@ -195,7 +195,12 @@ public class CaixaEletronico {
              return;
          }
 
-         if (saque <= 0) {
+         if (saque == 0) {
+             System.out.println("Saque cancelado.");
+             return;
+         }
+
+         if (saque < 0) {
              System.out.println("O valor do saque deve ser maior que zero");
          } else if (saque > saldoFinal) {
              System.out.println("Saldo insuficiente para realizar o saque.");
@@ -219,7 +224,7 @@ public class CaixaEletronico {
      }
  
      public void deposito() {
-         System.out.println("Informe o valor do depósito (exemplo: 10,50):");
+         System.out.println("Informe o valor do depósito (exemplo: 10,50) ou 0 para cancelar:");
          if (!scanner.hasNextDouble()) {
              if (scanner.hasNext()) {
                  scanner.next();
@@ -238,7 +243,12 @@ public class CaixaEletronico {
              return;
          }
 
-         if (deposito <= 0) {
+         if (deposito == 0) {
+             System.out.println("Depósito cancelado.");
+             return;
+         }
+
+         if (deposito < 0) {
              System.out.println("O valor do depósito deve ser maior que zero");
              return;
          }
