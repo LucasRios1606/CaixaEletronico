@@ -219,6 +219,7 @@ public class CaixaEletronico {
              totalSacado = totalSacado + saque;
              registrarMovimentacao("Saque", saque);
              System.out.println("Saque realizado com sucesso, seu saldo atual é de: " + moeda.format(saldoFinal));
+             System.out.println("Número da movimentação no histórico: " + movimentacoes.size());
          }
       
      }
@@ -271,6 +272,7 @@ public class CaixaEletronico {
          totalDepositado = totalDepositado + deposito;
          registrarMovimentacao("Depósito", deposito);
          System.out.println(nome + " seu depósito de " + moeda.format(deposito) + " foi realizado com sucesso!");
+         System.out.println("Número da movimentação no histórico: " + movimentacoes.size());
          System.out.println();
          System.out.println("Saldo atual de sua conta " + moeda.format(saldoFinal));
  
