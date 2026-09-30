@@ -166,8 +166,8 @@ public class CaixaEletronico {
          if (movimentacoes.isEmpty()) {
              System.out.println("Nenhuma movimentação realizada.");
          }
-         for (String movimentacao : movimentacoes) {
-             System.out.println(movimentacao);
+         for (int indice = 0; indice < movimentacoes.size(); indice++) {
+             System.out.println((indice + 1) + " - " + movimentacoes.get(indice));
          }
          System.out.println("Operações confirmadas: " + movimentacoes.size());
          System.out.println("Total depositado: " + moeda.format(totalDepositado));
