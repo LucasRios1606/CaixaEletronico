@@ -104,6 +104,7 @@ public class CaixaEletronico {
              System.out.println("2 - Sacar");
              System.out.println("3 - Depositar");
              System.out.println("4 - Ver histórico de movimentações");
+             System.out.println("5 - Consultar dados da conta");
              System.out.println("0 - Sair");
              System.out.println("Escolha uma opção:");
 
@@ -129,6 +130,12 @@ public class CaixaEletronico {
                      break;
                  case 4:
                      mostrarHistorico();
+                     break;
+                 case 5:
+                     System.out.println("Dados da conta:");
+                     System.out.println("Nome: " + nome);
+                     System.out.println("Banco: " + banco);
+                     System.out.println("Agência: " + agencia);
                      break;
                  case 0:
                      System.out.println("Ao sair, o saldo e o histórico desta execução não serão salvos.");
