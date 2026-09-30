@@ -147,6 +147,11 @@ public class CaixaEletronico {
                          System.out.println("Saída cancelada.");
                          break;
                      }
+                     System.out.println("Resumo da sessão:");
+                     System.out.println("Operações confirmadas: " + movimentacoes.size());
+                     System.out.println("Total depositado: " + moeda.format(totalDepositado));
+                     System.out.println("Total sacado: " + moeda.format(totalSacado));
+                     System.out.println("Saldo final: " + moeda.format(saldoFinal));
                      System.out.println("Obrigado por utilizar nosso caixa eletrônico!");
                      return;
                  default:
