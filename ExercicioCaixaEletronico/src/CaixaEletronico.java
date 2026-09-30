@@ -139,11 +139,11 @@ public class CaixaEletronico {
                      break;
                  case 0:
                      System.out.println("Ao sair, o saldo e o histórico desta execução não serão salvos.");
-                     System.out.println("Deseja sair? Digite S para confirmar ou outro valor para voltar ao menu:");
+                     System.out.println("Deseja sair? Digite S ou SIM para confirmar ou outro valor para voltar ao menu:");
                      if (!scanner.hasNext()) {
                          return;
                      }
-                     if (!scanner.next().equalsIgnoreCase("S")) {
+                     if (!confirmarOperacao()) {
                          System.out.println("Saída cancelada.");
                          break;
                      }
@@ -158,6 +158,14 @@ public class CaixaEletronico {
                      System.out.println("Opção inválida!");
              }
          } while (true);
+     }
+
+     private boolean confirmarOperacao() {
+         if (!scanner.hasNext()) {
+             return false;
+         }
+         String resposta = scanner.next();
+         return resposta.equalsIgnoreCase("S") || resposta.equalsIgnoreCase("SIM");
      }
 
      private void registrarMovimentacao(String tipo, double valor) {
@@ -215,8 +223,8 @@ public class CaixaEletronico {
              double novoSaldo = saldoFinal - saque;
              System.out.println("Saldo após o saque, se confirmado: " + moeda.format(novoSaldo));
              System.out.println("Confirmar saque de " + moeda.format(saque)
-                     + "? Digite S para confirmar ou outro valor para cancelar:");
-             if (!scanner.hasNext() || !scanner.next().equalsIgnoreCase("S")) {
+                     + "? Digite S ou SIM para confirmar ou outro valor para cancelar:");
+             if (!confirmarOperacao()) {
                  System.out.println("Saque cancelado.");
                  return;
              }
@@ -267,8 +275,8 @@ public class CaixaEletronico {
 
          System.out.println("Saldo após o depósito, se confirmado: " + moeda.format(novoSaldo));
          System.out.println("Confirmar depósito de " + moeda.format(deposito)
-                 + "? Digite S para confirmar ou outro valor para cancelar:");
-         if (!scanner.hasNext() || !scanner.next().equalsIgnoreCase("S")) {
+                 + "? Digite S ou SIM para confirmar ou outro valor para cancelar:");
+         if (!confirmarOperacao()) {
              System.out.println("Depósito cancelado.");
              return;
          }

@@ -43,7 +43,7 @@ O nome e o banco aceitam letras maiúsculas ou minúsculas. Esses dados estão d
 
 - Digite valores no padrão brasileiro, como `10,50` ou `1.234,56`, sem o símbolo `R$`.
 - Use valores positivos, sem frações de centavo. Digite `0` para cancelar e voltar ao menu.
-- Confira o valor e o saldo previsto. Digite `S` ou `s` para confirmar; outro valor cancela.
+- Confira o valor e o saldo previsto. Digite `S` ou `SIM` para confirmar (maiúsculas ou minúsculas); outro valor cancela.
 - Saques acima do saldo são recusados, com indicação do saldo disponível e de quanto falta.
 - Cada operação confirmada recebe um número correspondente à sua posição no histórico.
 
