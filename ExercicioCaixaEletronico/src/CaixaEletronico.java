@@ -148,6 +148,7 @@ public class CaixaEletronico {
                          break;
                      }
                      System.out.println("Resumo da sessão:");
+                     System.out.println("Saldo inicial: " + moeda.format(saldo));
                      System.out.println("Operações confirmadas: " + movimentacoes.size());
                      System.out.println("Total depositado: " + moeda.format(totalDepositado));
                      System.out.println("Total sacado: " + moeda.format(totalSacado));
