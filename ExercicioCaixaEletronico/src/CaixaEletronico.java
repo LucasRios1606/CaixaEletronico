@@ -114,7 +114,7 @@ public class CaixaEletronico {
              }
              if (!scanner.hasNextInt()) {
                  scanner.next();
-                 System.out.println("Opção inválida!");
+                 System.out.println("Opção inválida! Digite um número inteiro de 0 a 5.");
                  continue;
              }
              opcao = scanner.nextInt();
@@ -152,7 +152,7 @@ public class CaixaEletronico {
                      mostrarResumoSessao();
                      return;
                  default:
-                     System.out.println("Opção inválida!");
+                     System.out.println("Opção inválida! Digite um número inteiro de 0 a 5.");
              }
          } while (true);
      }
