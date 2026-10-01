@@ -109,6 +109,7 @@ public class CaixaEletronico {
              System.out.println("Escolha uma opção:");
 
              if (!scanner.hasNext()) {
+                 mostrarResumoSessao();
                  return;
              }
              if (!scanner.hasNextInt()) {
@@ -141,24 +142,29 @@ public class CaixaEletronico {
                      System.out.println("Ao sair, o saldo e o histórico desta execução não serão salvos.");
                      System.out.println("Deseja sair? Digite S ou SIM para confirmar ou outro valor para voltar ao menu:");
                      if (!scanner.hasNext()) {
+                         mostrarResumoSessao();
                          return;
                      }
                      if (!confirmarOperacao()) {
                          System.out.println("Saída cancelada.");
                          break;
                      }
-                     System.out.println("Resumo da sessão:");
-                     System.out.println("Saldo inicial: " + moeda.format(saldo));
-                     System.out.println("Operações confirmadas: " + movimentacoes.size());
-                     System.out.println("Total depositado: " + moeda.format(totalDepositado));
-                     System.out.println("Total sacado: " + moeda.format(totalSacado));
-                     System.out.println("Saldo final: " + moeda.format(saldoFinal));
-                     System.out.println("Obrigado por utilizar nosso caixa eletrônico!");
+                     mostrarResumoSessao();
                      return;
                  default:
                      System.out.println("Opção inválida!");
              }
          } while (true);
+     }
+
+     private void mostrarResumoSessao() {
+         System.out.println("Resumo da sessão:");
+         System.out.println("Saldo inicial: " + moeda.format(saldo));
+         System.out.println("Operações confirmadas: " + movimentacoes.size());
+         System.out.println("Total depositado: " + moeda.format(totalDepositado));
+         System.out.println("Total sacado: " + moeda.format(totalSacado));
+         System.out.println("Saldo final: " + moeda.format(saldoFinal));
+         System.out.println("Obrigado por utilizar nosso caixa eletrônico!");
      }
 
      private boolean confirmarOperacao() {
