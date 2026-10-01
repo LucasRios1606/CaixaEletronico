@@ -197,20 +197,21 @@ public class CaixaEletronico {
 
      public void sacar() {
          System.out.println(nome + " Informe o valor que deseja sacar (exemplo: 10,50) ou 0 para cancelar:");
-         if (!scanner.hasNextDouble()) {
+         if (!scanner.hasNextBigDecimal()) {
              if (scanner.hasNext()) {
                  scanner.next();
              }
              System.out.println("Informe um valor numérico para o saque.");
              return;
          }
-                 saque = scanner.nextDouble();
+         BigDecimal valorSaque = scanner.nextBigDecimal();
+         saque = valorSaque.doubleValue();
          if (!Double.isFinite(saque)) {
              System.out.println("Informe um valor válido para o saque.");
              return;
          }
  
-         if (BigDecimal.valueOf(saque).stripTrailingZeros().scale() > 2) {
+         if (valorSaque.stripTrailingZeros().scale() > 2) {
              System.out.println("Informe um valor com no máximo duas casas decimais para o saque.");
              return;
          }
@@ -246,20 +247,21 @@ public class CaixaEletronico {
  
      public void deposito() {
          System.out.println("Informe o valor do depósito (exemplo: 10,50) ou 0 para cancelar:");
-         if (!scanner.hasNextDouble()) {
+         if (!scanner.hasNextBigDecimal()) {
              if (scanner.hasNext()) {
                  scanner.next();
              }
              System.out.println("Informe um valor numérico para o depósito.");
              return;
          }
-             deposito = scanner.nextDouble();
+         BigDecimal valorDeposito = scanner.nextBigDecimal();
+         deposito = valorDeposito.doubleValue();
          if (!Double.isFinite(deposito)) {
              System.out.println("Informe um valor válido para o depósito.");
              return;
          }
 
-         if (BigDecimal.valueOf(deposito).stripTrailingZeros().scale() > 2) {
+         if (valorDeposito.stripTrailingZeros().scale() > 2) {
              System.out.println("Informe um valor com no máximo duas casas decimais para o depósito.");
              return;
          }
