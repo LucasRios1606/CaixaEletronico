@@ -27,8 +27,8 @@ public class CaixaEletronico {
      double saldoFinal = saldo;
      double saque;
      double deposito;
-     double totalSacado = 0;
-     double totalDepositado = 0;
+     BigDecimal totalSacado = BigDecimal.ZERO;
+     BigDecimal totalDepositado = BigDecimal.ZERO;
      Scanner scanner = new Scanner(System.in).useLocale(Locale.forLanguageTag("pt-BR"));
      NumberFormat moeda = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("pt-BR"));
      List<String> movimentacoes = new ArrayList<>();
@@ -230,7 +230,7 @@ public class CaixaEletronico {
                  return;
              }
              saldoFinal = novoSaldo;
-             totalSacado = totalSacado + saque;
+             totalSacado = totalSacado.add(BigDecimal.valueOf(saque));
              registrarMovimentacao("Saque", saque);
              System.out.println("Saque realizado com sucesso, seu saldo atual é de: " + moeda.format(saldoFinal));
              System.out.println("Número da movimentação no histórico: " + movimentacoes.size());
@@ -283,7 +283,7 @@ public class CaixaEletronico {
          }
 
          saldoFinal = novoSaldo;
-         totalDepositado = totalDepositado + deposito;
+         totalDepositado = totalDepositado.add(BigDecimal.valueOf(deposito));
          registrarMovimentacao("Depósito", deposito);
          System.out.println(nome + " seu depósito de " + moeda.format(deposito) + " foi realizado com sucesso!");
          System.out.println("Número da movimentação no histórico: " + movimentacoes.size());
