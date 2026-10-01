@@ -221,7 +221,7 @@ public class CaixaEletronico {
              System.out.println("Saldo disponível: " + moeda.format(saldoFinal));
              System.out.println("Valor que falta: " + moeda.format(saque - saldoFinal));
          } else {
-             double novoSaldo = saldoFinal - saque;
+             double novoSaldo = BigDecimal.valueOf(saldoFinal).subtract(BigDecimal.valueOf(saque)).doubleValue();
              System.out.println("Saldo após o saque, se confirmado: " + moeda.format(novoSaldo));
              System.out.println("Confirmar saque de " + moeda.format(saque)
                      + "? Digite S ou SIM para confirmar ou outro valor para cancelar:");
@@ -268,7 +268,7 @@ public class CaixaEletronico {
              return;
          }
 
-         double novoSaldo = saldoFinal + deposito;
+         double novoSaldo = BigDecimal.valueOf(saldoFinal).add(BigDecimal.valueOf(deposito)).doubleValue();
          if (!Double.isFinite(novoSaldo)) {
              System.out.println("O depósito ultrapassa o limite de saldo permitido.");
              return;
