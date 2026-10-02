@@ -23,10 +23,10 @@ public class CaixaEletronico {
     String nomeInput;
     int agencia = 12345;
     int agenciaInput;
-     double saldo = 50000;
-     double saldoFinal = saldo;
-     double saque;
-     double deposito;
+     BigDecimal saldo = new BigDecimal("50000.00");
+     BigDecimal saldoFinal = saldo;
+     BigDecimal saque;
+     BigDecimal deposito;
      BigDecimal totalSacado = BigDecimal.ZERO;
      BigDecimal totalDepositado = BigDecimal.ZERO;
      int quantidadeSaques = 0;
@@ -187,7 +187,7 @@ public class CaixaEletronico {
          return resposta.equalsIgnoreCase("S") || resposta.equalsIgnoreCase("SIM");
      }
 
-     private void registrarMovimentacao(String tipo, double valor) {
+     private void registrarMovimentacao(String tipo, BigDecimal valor) {
          String dataHora = LocalDateTime.now().format(formatoDataHora);
          movimentacoes.add(dataHora + " | " + tipo + ": " + moeda.format(valor)
                  + " | Saldo: " + moeda.format(saldoFinal));
@@ -253,31 +253,30 @@ public class CaixaEletronico {
              System.out.println("Informe um valor numérico para o saque.");
              return;
          }
-         BigDecimal valorSaque = scanner.nextBigDecimal();
-         saque = valorSaque.doubleValue();
-         if (!Double.isFinite(saque)) {
+         saque = scanner.nextBigDecimal();
+         if (!Double.isFinite(saque.doubleValue())) {
              System.out.println("Informe um valor válido para o saque.");
              return;
          }
  
-         if (valorSaque.stripTrailingZeros().scale() > 2) {
+         if (saque.stripTrailingZeros().scale() > 2) {
              System.out.println("Informe um valor com no máximo duas casas decimais para o saque.");
              return;
          }
 
-         if (saque == 0) {
+         if (saque.signum() == 0) {
              System.out.println("Saque cancelado.");
              return;
          }
 
-         if (saque < 0) {
+         if (saque.signum() < 0) {
              System.out.println("O valor do saque deve ser maior que zero");
-         } else if (saque > saldoFinal) {
+         } else if (saque.compareTo(saldoFinal) > 0) {
              System.out.println("Saldo insuficiente para realizar o saque.");
              System.out.println("Saldo disponível: " + moeda.format(saldoFinal));
-             System.out.println("Valor que falta: " + moeda.format(saque - saldoFinal));
+             System.out.println("Valor que falta: " + moeda.format(saque.subtract(saldoFinal)));
          } else {
-             double novoSaldo = BigDecimal.valueOf(saldoFinal).subtract(BigDecimal.valueOf(saque)).doubleValue();
+             BigDecimal novoSaldo = saldoFinal.subtract(saque);
              System.out.println("Saldo após o saque, se confirmado: " + moeda.format(novoSaldo));
              System.out.println("Confirmar saque de " + moeda.format(saque)
                      + "? Digite S ou SIM para confirmar ou outro valor para cancelar:");
@@ -286,7 +285,7 @@ public class CaixaEletronico {
                  return;
              }
              saldoFinal = novoSaldo;
-             totalSacado = totalSacado.add(BigDecimal.valueOf(saque));
+             totalSacado = totalSacado.add(saque);
              registrarMovimentacao("Saque", saque);
              quantidadeSaques++;
              System.out.println("Saque realizado com sucesso, seu saldo atual é de: " + moeda.format(saldoFinal));
@@ -304,30 +303,29 @@ public class CaixaEletronico {
              System.out.println("Informe um valor numérico para o depósito.");
              return;
          }
-         BigDecimal valorDeposito = scanner.nextBigDecimal();
-         deposito = valorDeposito.doubleValue();
-         if (!Double.isFinite(deposito)) {
+         deposito = scanner.nextBigDecimal();
+         if (!Double.isFinite(deposito.doubleValue())) {
              System.out.println("Informe um valor válido para o depósito.");
              return;
          }
 
-         if (valorDeposito.stripTrailingZeros().scale() > 2) {
+         if (deposito.stripTrailingZeros().scale() > 2) {
              System.out.println("Informe um valor com no máximo duas casas decimais para o depósito.");
              return;
          }
 
-         if (deposito == 0) {
+         if (deposito.signum() == 0) {
              System.out.println("Depósito cancelado.");
              return;
          }
 
-         if (deposito < 0) {
+         if (deposito.signum() < 0) {
              System.out.println("O valor do depósito deve ser maior que zero");
              return;
          }
 
-         double novoSaldo = BigDecimal.valueOf(saldoFinal).add(BigDecimal.valueOf(deposito)).doubleValue();
-         if (!Double.isFinite(novoSaldo)) {
+         BigDecimal novoSaldo = saldoFinal.add(deposito);
+         if (!Double.isFinite(novoSaldo.doubleValue())) {
              System.out.println("O depósito ultrapassa o limite de saldo permitido.");
              return;
          }
@@ -341,7 +339,7 @@ public class CaixaEletronico {
          }
 
          saldoFinal = novoSaldo;
-         totalDepositado = totalDepositado.add(BigDecimal.valueOf(deposito));
+         totalDepositado = totalDepositado.add(deposito);
          registrarMovimentacao("Depósito", deposito);
          quantidadeDepositos++;
          System.out.println(nome + " seu depósito de " + moeda.format(deposito) + " foi realizado com sucesso!");
