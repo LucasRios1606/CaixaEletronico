@@ -246,10 +246,12 @@ public class CaixaEletronico {
 
      public void sacar() {
          System.out.println(nome + " Informe o valor que deseja sacar (exemplo: 10,50) ou 0 para cancelar:");
+         if (!scanner.hasNext()) {
+             System.out.println("Saque cancelado.");
+             return;
+         }
          if (!scanner.hasNextBigDecimal()) {
-             if (scanner.hasNext()) {
-                 scanner.next();
-             }
+             scanner.next();
              System.out.println("Informe um valor numérico para o saque.");
              return;
          }
@@ -296,10 +298,12 @@ public class CaixaEletronico {
  
      public void deposito() {
          System.out.println("Informe o valor do depósito (exemplo: 10,50) ou 0 para cancelar:");
+         if (!scanner.hasNext()) {
+             System.out.println("Depósito cancelado.");
+             return;
+         }
          if (!scanner.hasNextBigDecimal()) {
-             if (scanner.hasNext()) {
-                 scanner.next();
-             }
+             scanner.next();
              System.out.println("Informe um valor numérico para o depósito.");
              return;
          }
