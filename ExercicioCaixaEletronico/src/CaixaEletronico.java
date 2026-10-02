@@ -208,26 +208,29 @@ public class CaixaEletronico {
              System.out.println("Nenhuma movimentação realizada.");
              return;
          }
-         System.out.println("Informe o número da movimentação (1 a " + movimentacoes.size() + ") ou 0 para cancelar:");
-         if (!scanner.hasNext()) {
+         while (true) {
+             System.out.println("Informe o número da movimentação (1 a " + movimentacoes.size() + ") ou 0 para cancelar:");
+             if (!scanner.hasNext()) {
+                 return;
+             }
+             if (!scanner.hasNextInt()) {
+                 scanner.next();
+                 System.out.println("Informe um número inteiro válido para a movimentação.");
+                 continue;
+             }
+             int numero = scanner.nextInt();
+             if (numero == 0) {
+                 System.out.println("Consulta cancelada.");
+                 return;
+             }
+             if (numero < 1 || numero > movimentacoes.size()) {
+                 System.out.println("Movimentação não encontrada.");
+                 continue;
+             }
+             System.out.println("Movimentação consultada:");
+             System.out.println(numero + " - " + movimentacoes.get(numero - 1));
              return;
          }
-         if (!scanner.hasNextInt()) {
-             scanner.next();
-             System.out.println("Informe um número inteiro válido para a movimentação.");
-             return;
-         }
-         int numero = scanner.nextInt();
-         if (numero == 0) {
-             System.out.println("Consulta cancelada.");
-             return;
-         }
-         if (numero < 1 || numero > movimentacoes.size()) {
-             System.out.println("Movimentação não encontrada.");
-             return;
-         }
-         System.out.println("Movimentação consultada:");
-         System.out.println(numero + " - " + movimentacoes.get(numero - 1));
      }
 
      public void mostrarHistorico() {
