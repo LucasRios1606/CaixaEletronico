@@ -38,6 +38,7 @@ O nome e o banco aceitam letras maiúsculas ou minúsculas. Esses dados estão d
 | 4 | Ver histórico de movimentações e totais |
 | 5 | Consultar nome, banco e agência |
 | 6 | Consultar a última movimentação confirmada |
+| 7 | Consultar uma movimentação pelo número (0 cancela a consulta) |
 | 0 | Sair, após confirmação |
 
 ## Saques e depósitos

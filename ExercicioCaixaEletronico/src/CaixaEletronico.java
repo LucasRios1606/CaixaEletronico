@@ -108,6 +108,7 @@ public class CaixaEletronico {
              System.out.println("4 - Ver histórico de movimentações");
              System.out.println("5 - Consultar dados da conta");
              System.out.println("6 - Consultar última movimentação");
+             System.out.println("7 - Consultar movimentação pelo número");
              System.out.println("0 - Sair");
              System.out.println("Escolha uma opção:");
 
@@ -117,7 +118,7 @@ public class CaixaEletronico {
              }
              if (!scanner.hasNextInt()) {
                  scanner.next();
-                 System.out.println("Opção inválida! Digite um número inteiro de 0 a 6.");
+                 System.out.println("Opção inválida! Digite um número inteiro de 0 a 7.");
                  continue;
              }
              opcao = scanner.nextInt();
@@ -144,6 +145,9 @@ public class CaixaEletronico {
                  case 6:
                      mostrarUltimaMovimentacao();
                      break;
+                 case 7:
+                     consultarMovimentacao();
+                     break;
                  case 0:
                      System.out.println("Ao sair, o saldo e o histórico desta execução não serão salvos.");
                      System.out.println("Deseja sair? Digite S ou SIM para confirmar ou outro valor para voltar ao menu:");
@@ -158,7 +162,7 @@ public class CaixaEletronico {
                      mostrarResumoSessao();
                      return;
                  default:
-                     System.out.println("Opção inválida! Digite um número inteiro de 0 a 6.");
+                     System.out.println("Opção inválida! Digite um número inteiro de 0 a 7.");
              }
          } while (true);
      }
@@ -196,6 +200,33 @@ public class CaixaEletronico {
              return;
          }
          int numero = movimentacoes.size();
+         System.out.println(numero + " - " + movimentacoes.get(numero - 1));
+     }
+
+     private void consultarMovimentacao() {
+         if (movimentacoes.isEmpty()) {
+             System.out.println("Nenhuma movimentação realizada.");
+             return;
+         }
+         System.out.println("Informe o número da movimentação (1 a " + movimentacoes.size() + ") ou 0 para cancelar:");
+         if (!scanner.hasNext()) {
+             return;
+         }
+         if (!scanner.hasNextInt()) {
+             scanner.next();
+             System.out.println("Informe um número inteiro válido para a movimentação.");
+             return;
+         }
+         int numero = scanner.nextInt();
+         if (numero == 0) {
+             System.out.println("Consulta cancelada.");
+             return;
+         }
+         if (numero < 1 || numero > movimentacoes.size()) {
+             System.out.println("Movimentação não encontrada.");
+             return;
+         }
+         System.out.println("Movimentação consultada:");
          System.out.println(numero + " - " + movimentacoes.get(numero - 1));
      }
 
