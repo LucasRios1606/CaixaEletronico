@@ -105,6 +105,7 @@ public class CaixaEletronico {
              System.out.println("3 - Depositar");
              System.out.println("4 - Ver histórico de movimentações");
              System.out.println("5 - Consultar dados da conta");
+             System.out.println("6 - Consultar última movimentação");
              System.out.println("0 - Sair");
              System.out.println("Escolha uma opção:");
 
@@ -114,7 +115,7 @@ public class CaixaEletronico {
              }
              if (!scanner.hasNextInt()) {
                  scanner.next();
-                 System.out.println("Opção inválida! Digite um número inteiro de 0 a 5.");
+                 System.out.println("Opção inválida! Digite um número inteiro de 0 a 6.");
                  continue;
              }
              opcao = scanner.nextInt();
@@ -138,6 +139,9 @@ public class CaixaEletronico {
                      System.out.println("Banco: " + banco);
                      System.out.println("Agência: " + agencia);
                      break;
+                 case 6:
+                     mostrarUltimaMovimentacao();
+                     break;
                  case 0:
                      System.out.println("Ao sair, o saldo e o histórico desta execução não serão salvos.");
                      System.out.println("Deseja sair? Digite S ou SIM para confirmar ou outro valor para voltar ao menu:");
@@ -152,7 +156,7 @@ public class CaixaEletronico {
                      mostrarResumoSessao();
                      return;
                  default:
-                     System.out.println("Opção inválida! Digite um número inteiro de 0 a 5.");
+                     System.out.println("Opção inválida! Digite um número inteiro de 0 a 6.");
              }
          } while (true);
      }
@@ -179,6 +183,16 @@ public class CaixaEletronico {
          String dataHora = LocalDateTime.now().format(formatoDataHora);
          movimentacoes.add(dataHora + " | " + tipo + ": " + moeda.format(valor)
                  + " | Saldo: " + moeda.format(saldoFinal));
+     }
+
+     private void mostrarUltimaMovimentacao() {
+         System.out.println("Última movimentação desta execução:");
+         if (movimentacoes.isEmpty()) {
+             System.out.println("Nenhuma movimentação realizada.");
+             return;
+         }
+         int numero = movimentacoes.size();
+         System.out.println(numero + " - " + movimentacoes.get(numero - 1));
      }
 
      public void mostrarHistorico() {
