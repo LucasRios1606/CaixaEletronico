@@ -242,6 +242,8 @@ public class CaixaEletronico {
              System.out.println((indice + 1) + " - " + movimentacoes.get(indice));
          }
          System.out.println("Operações confirmadas: " + movimentacoes.size());
+         System.out.println("Depósitos confirmados: " + quantidadeDepositos);
+         System.out.println("Saques confirmados: " + quantidadeSaques);
          System.out.println("Total depositado: " + moeda.format(totalDepositado));
          System.out.println("Total sacado: " + moeda.format(totalSacado));
          System.out.println("Saldo atual: " + moeda.format(saldoFinal));
