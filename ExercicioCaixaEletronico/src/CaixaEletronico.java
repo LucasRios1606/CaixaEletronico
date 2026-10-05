@@ -300,41 +300,45 @@ public class CaixaEletronico {
      }
  
      public void deposito() {
-         System.out.println("Informe o valor do depósito (exemplo: 10,50) ou 0 para cancelar:");
-         if (!scanner.hasNext()) {
-             System.out.println("Depósito cancelado.");
-             return;
-         }
-         if (!scanner.hasNextBigDecimal()) {
-             scanner.next();
-             System.out.println("Informe um valor numérico para o depósito.");
-             return;
-         }
-         deposito = scanner.nextBigDecimal();
-         if (!Double.isFinite(deposito.doubleValue())) {
-             System.out.println("Informe um valor válido para o depósito.");
-             return;
-         }
+         BigDecimal novoSaldo;
+         while (true) {
+             System.out.println("Informe o valor do depósito (exemplo: 10,50) ou 0 para cancelar:");
+             if (!scanner.hasNext()) {
+                 System.out.println("Depósito cancelado.");
+                 return;
+             }
+             if (!scanner.hasNextBigDecimal()) {
+                 scanner.next();
+                 System.out.println("Informe um valor numérico para o depósito.");
+                 continue;
+             }
+             deposito = scanner.nextBigDecimal();
+             if (!Double.isFinite(deposito.doubleValue())) {
+                 System.out.println("Informe um valor válido para o depósito.");
+                 continue;
+             }
 
-         if (deposito.stripTrailingZeros().scale() > 2) {
-             System.out.println("Informe um valor com no máximo duas casas decimais para o depósito.");
-             return;
-         }
+             if (deposito.stripTrailingZeros().scale() > 2) {
+                 System.out.println("Informe um valor com no máximo duas casas decimais para o depósito.");
+                 continue;
+             }
 
-         if (deposito.signum() == 0) {
-             System.out.println("Depósito cancelado.");
-             return;
-         }
+             if (deposito.signum() == 0) {
+                 System.out.println("Depósito cancelado.");
+                 return;
+             }
 
-         if (deposito.signum() < 0) {
-             System.out.println("O valor do depósito deve ser maior que zero");
-             return;
-         }
+             if (deposito.signum() < 0) {
+                 System.out.println("O valor do depósito deve ser maior que zero");
+                 continue;
+             }
 
-         BigDecimal novoSaldo = saldoFinal.add(deposito);
-         if (!Double.isFinite(novoSaldo.doubleValue())) {
-             System.out.println("O depósito ultrapassa o limite de saldo permitido.");
-             return;
+             novoSaldo = saldoFinal.add(deposito);
+             if (!Double.isFinite(novoSaldo.doubleValue())) {
+                 System.out.println("O depósito ultrapassa o limite de saldo permitido.");
+                 continue;
+             }
+             break;
          }
 
          System.out.println("Saldo após o depósito, se confirmado: " + moeda.format(novoSaldo));
