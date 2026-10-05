@@ -248,39 +248,44 @@ public class CaixaEletronico {
      }
 
      public void sacar() {
-         System.out.println(nome + " Informe o valor que deseja sacar (exemplo: 10,50) ou 0 para cancelar:");
-         if (!scanner.hasNext()) {
-             System.out.println("Saque cancelado.");
-             return;
-         }
-         if (!scanner.hasNextBigDecimal()) {
-             scanner.next();
-             System.out.println("Informe um valor numérico para o saque.");
-             return;
-         }
-         saque = scanner.nextBigDecimal();
-         if (!Double.isFinite(saque.doubleValue())) {
-             System.out.println("Informe um valor válido para o saque.");
-             return;
-         }
- 
-         if (saque.stripTrailingZeros().scale() > 2) {
-             System.out.println("Informe um valor com no máximo duas casas decimais para o saque.");
-             return;
-         }
+         while (true) {
+             System.out.println(nome + " Informe o valor que deseja sacar (exemplo: 10,50) ou 0 para cancelar:");
+             if (!scanner.hasNext()) {
+                 System.out.println("Saque cancelado.");
+                 return;
+             }
+             if (!scanner.hasNextBigDecimal()) {
+                 scanner.next();
+                 System.out.println("Informe um valor numérico para o saque.");
+                 continue;
+             }
+             saque = scanner.nextBigDecimal();
+             if (!Double.isFinite(saque.doubleValue())) {
+                 System.out.println("Informe um valor válido para o saque.");
+                 continue;
+             }
 
-         if (saque.signum() == 0) {
-             System.out.println("Saque cancelado.");
-             return;
-         }
+             if (saque.stripTrailingZeros().scale() > 2) {
+                 System.out.println("Informe um valor com no máximo duas casas decimais para o saque.");
+                 continue;
+             }
 
-         if (saque.signum() < 0) {
-             System.out.println("O valor do saque deve ser maior que zero");
-         } else if (saque.compareTo(saldoFinal) > 0) {
-             System.out.println("Saldo insuficiente para realizar o saque.");
-             System.out.println("Saldo disponível: " + moeda.format(saldoFinal));
-             System.out.println("Valor que falta: " + moeda.format(saque.subtract(saldoFinal)));
-         } else {
+             if (saque.signum() == 0) {
+                 System.out.println("Saque cancelado.");
+                 return;
+             }
+
+             if (saque.signum() < 0) {
+                 System.out.println("O valor do saque deve ser maior que zero");
+                 continue;
+             }
+             if (saque.compareTo(saldoFinal) > 0) {
+                 System.out.println("Saldo insuficiente para realizar o saque.");
+                 System.out.println("Saldo disponível: " + moeda.format(saldoFinal));
+                 System.out.println("Valor que falta: " + moeda.format(saque.subtract(saldoFinal)));
+                 continue;
+             }
+
              BigDecimal novoSaldo = saldoFinal.subtract(saque);
              System.out.println("Saldo após o saque, se confirmado: " + moeda.format(novoSaldo));
              System.out.println("Confirmar saque de " + moeda.format(saque)
@@ -295,10 +300,10 @@ public class CaixaEletronico {
              quantidadeSaques++;
              System.out.println("Saque realizado com sucesso, seu saldo atual é de: " + moeda.format(saldoFinal));
              System.out.println("Número da movimentação no histórico: " + movimentacoes.size());
+             return;
          }
-      
      }
- 
+
      public void deposito() {
          BigDecimal novoSaldo;
          while (true) {
