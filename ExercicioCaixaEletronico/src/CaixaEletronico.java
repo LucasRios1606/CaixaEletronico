@@ -42,11 +42,15 @@ public class CaixaEletronico {
   */
      public boolean identificadorUsuario() {
          while (!nome.equalsIgnoreCase(nomeInput)) {
-             System.out.println("Informe o seu nome:");
+             System.out.println("Informe o seu nome ou digite SAIR para encerrar:");
              if (!scanner.hasNextLine()) {
                  return false;
              }
                      nomeInput = scanner.nextLine().trim();
+             if (nomeInput.equalsIgnoreCase("SAIR")) {
+                 System.out.println("Identificação encerrada.");
+                 return false;
+             }
                   if (nome.equalsIgnoreCase(nomeInput)) {
                      System.out.println("Seja bem vindo, " + nome + ".");
                  } else {
@@ -57,11 +61,15 @@ public class CaixaEletronico {
          */
  
          while (!banco.equalsIgnoreCase(bancoInput)) {
-             System.out.println("Informe o nome do banco:");
+             System.out.println("Informe o nome do banco ou digite SAIR para encerrar:");
              if (!scanner.hasNextLine()) {
                  return false;
              }
                bancoInput = scanner.nextLine().trim();
+             if (bancoInput.equalsIgnoreCase("SAIR")) {
+                 System.out.println("Identificação encerrada.");
+                 return false;
+             }
  
          if (banco.equalsIgnoreCase(bancoInput)) {
              System.out.println("Seja bem-vindo, " + nome + " ao " + banco);
@@ -71,12 +79,16 @@ public class CaixaEletronico {
          }
  
          while (agenciaInput != agencia) {
-             System.out.println("Informe o número da agência:");
+             System.out.println("Informe o número da agência ou digite SAIR para encerrar:");
              if (!scanner.hasNext()) {
                  return false;
              }
              if (!scanner.hasNextInt()) {
-                 scanner.next();
+                 String entrada = scanner.next();
+                 if (entrada.equalsIgnoreCase("SAIR")) {
+                     System.out.println("Identificação encerrada.");
+                     return false;
+                 }
                  System.out.println("Informe um número inteiro válido para a agência.");
                  continue;
              }
