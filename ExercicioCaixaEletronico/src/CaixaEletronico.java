@@ -46,7 +46,7 @@ public class CaixaEletronico {
              if (!scanner.hasNextLine()) {
                  return false;
              }
-                     nomeInput = scanner.nextLine().trim();
+                     nomeInput = scanner.nextLine().trim().replaceAll("\\s+", " ");
              if (nomeInput.equalsIgnoreCase("SAIR")) {
                  System.out.println("Identificação encerrada.");
                  return false;
