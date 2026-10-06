@@ -188,9 +188,10 @@ public class CaixaEletronico {
          return resposta.equalsIgnoreCase("S") || resposta.equalsIgnoreCase("SIM");
      }
 
-     private void registrarMovimentacao(String tipo, BigDecimal valor) {
+     private void registrarMovimentacao(String tipo, BigDecimal valor, BigDecimal saldoAnterior) {
          String dataHora = LocalDateTime.now().format(formatoDataHora);
          movimentacoes.add(dataHora + " | " + tipo + ": " + moeda.format(valor)
+                 + " | Saldo anterior: " + moeda.format(saldoAnterior)
                  + " | Saldo: " + moeda.format(saldoFinal));
      }
 
@@ -297,9 +298,10 @@ public class CaixaEletronico {
                  System.out.println("Saque cancelado.");
                  return;
              }
+             BigDecimal saldoAnterior = saldoFinal;
              saldoFinal = novoSaldo;
              totalSacado = totalSacado.add(saque);
-             registrarMovimentacao("Saque", saque);
+             registrarMovimentacao("Saque", saque, saldoAnterior);
              quantidadeSaques++;
              System.out.println("Saque realizado com sucesso, seu saldo atual é de: " + moeda.format(saldoFinal));
              System.out.println("Número da movimentação no histórico: " + movimentacoes.size());
@@ -357,9 +359,10 @@ public class CaixaEletronico {
              return;
          }
 
+         BigDecimal saldoAnterior = saldoFinal;
          saldoFinal = novoSaldo;
          totalDepositado = totalDepositado.add(deposito);
-         registrarMovimentacao("Depósito", deposito);
+         registrarMovimentacao("Depósito", deposito, saldoAnterior);
          quantidadeDepositos++;
          System.out.println(nome + " seu depósito de " + moeda.format(deposito) + " foi realizado com sucesso!");
          System.out.println("Número da movimentação no histórico: " + movimentacoes.size());
