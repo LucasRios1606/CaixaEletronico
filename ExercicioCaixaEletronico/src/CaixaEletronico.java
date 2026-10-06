@@ -248,6 +248,7 @@ public class CaixaEletronico {
          System.out.println("Total depositado: " + moeda.format(totalDepositado));
          System.out.println("Total sacado: " + moeda.format(totalSacado));
          System.out.println("Saldo atual: " + moeda.format(saldoFinal));
+         System.out.println("Variação do saldo: " + moeda.format(saldoFinal.subtract(saldo)));
      }
 
      public void sacar() {
