@@ -210,7 +210,7 @@ public class CaixaEletronico {
              return;
          }
          while (true) {
-             System.out.println("Informe o número da movimentação (1 a " + movimentacoes.size() + ") ou 0 para cancelar:");
+             System.out.println("Informe o número da movimentação (1 a " + movimentacoes.size() + ") ou 0 para encerrar a consulta:");
              if (!scanner.hasNext()) {
                  return;
              }
@@ -221,7 +221,7 @@ public class CaixaEletronico {
              }
              int numero = scanner.nextInt();
              if (numero == 0) {
-                 System.out.println("Consulta cancelada.");
+                 System.out.println("Consulta encerrada.");
                  return;
              }
              if (numero < 1 || numero > movimentacoes.size()) {
@@ -230,7 +230,6 @@ public class CaixaEletronico {
              }
              System.out.println("Movimentação consultada:");
              System.out.println(numero + " - " + movimentacoes.get(numero - 1));
-             return;
          }
      }
 
