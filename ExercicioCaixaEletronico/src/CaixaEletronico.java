@@ -279,6 +279,7 @@ public class CaixaEletronico {
      }
 
      public void sacar() {
+         System.out.println("Saldo atual: " + moeda.format(saldoFinal));
          if (saldoFinal.signum() == 0) {
              System.out.println("Seu saldo está zerado. Faça um depósito antes de realizar um saque.");
              return;
@@ -342,6 +343,7 @@ public class CaixaEletronico {
      }
 
      public void deposito() {
+         System.out.println("Saldo atual: " + moeda.format(saldoFinal));
          BigDecimal novoSaldo;
          while (true) {
              System.out.println("Informe o valor do depósito (exemplo: 10,50) ou 0 para cancelar:");
