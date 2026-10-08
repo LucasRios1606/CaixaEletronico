@@ -121,16 +121,17 @@ public class CaixaEletronico {
              System.out.println("5 - Consultar dados da conta");
              System.out.println("6 - Consultar última movimentação");
              System.out.println("7 - Consultar movimentação pelo número");
+             System.out.println("8 - Consultar resumo da sessão");
              System.out.println("0 - Sair");
              System.out.println("Escolha uma opção:");
 
              if (!scanner.hasNext()) {
-                 mostrarResumoSessao();
+                 encerrarSessao();
                  return;
              }
              if (!scanner.hasNextInt()) {
                  scanner.next();
-                 System.out.println("Opção inválida! Digite um número inteiro de 0 a 7.");
+                 System.out.println("Opção inválida! Digite um número inteiro de 0 a 8.");
                  continue;
              }
              opcao = scanner.nextInt();
@@ -160,21 +161,24 @@ public class CaixaEletronico {
                  case 7:
                      consultarMovimentacao();
                      break;
+                 case 8:
+                     mostrarResumoSessao();
+                     break;
                  case 0:
                      System.out.println("Ao sair, o saldo e o histórico desta execução não serão salvos.");
                      System.out.println("Deseja sair? Digite S ou SIM para confirmar ou N, NÃO ou NAO para voltar ao menu:");
                      if (!scanner.hasNext()) {
-                         mostrarResumoSessao();
+                         encerrarSessao();
                          return;
                      }
                      if (!confirmarOperacao()) {
                          System.out.println("Saída cancelada.");
                          break;
                      }
-                     mostrarResumoSessao();
+                     encerrarSessao();
                      return;
                  default:
-                     System.out.println("Opção inválida! Digite um número inteiro de 0 a 7.");
+                     System.out.println("Opção inválida! Digite um número inteiro de 0 a 8.");
              }
          } while (true);
      }
@@ -189,6 +193,10 @@ public class CaixaEletronico {
          System.out.println("Total sacado: " + moeda.format(totalSacado));
          System.out.println("Saldo final: " + moeda.format(saldoFinal));
          System.out.println("Variação do saldo: " + moeda.format(saldoFinal.subtract(saldo)));
+     }
+
+     private void encerrarSessao() {
+         mostrarResumoSessao();
          System.out.println("Obrigado por utilizar nosso caixa eletrônico!");
      }
 
