@@ -183,14 +183,18 @@ public class CaixaEletronico {
          } while (true);
      }
 
-     private void mostrarResumoSessao() {
-         System.out.println("Resumo da sessão:");
-         System.out.println("Saldo inicial: " + moeda.format(saldo));
+     private void mostrarTotaisMovimentacoes() {
          System.out.println("Operações confirmadas: " + movimentacoes.size());
          System.out.println("Depósitos confirmados: " + quantidadeDepositos);
          System.out.println("Saques confirmados: " + quantidadeSaques);
          System.out.println("Total depositado: " + moeda.format(totalDepositado));
          System.out.println("Total sacado: " + moeda.format(totalSacado));
+     }
+
+     private void mostrarResumoSessao() {
+         System.out.println("Resumo da sessão:");
+         System.out.println("Saldo inicial: " + moeda.format(saldo));
+         mostrarTotaisMovimentacoes();
          System.out.println("Saldo final: " + moeda.format(saldoFinal));
          System.out.println("Variação do saldo: " + moeda.format(saldoFinal.subtract(saldo)));
      }
@@ -269,11 +273,7 @@ public class CaixaEletronico {
          for (int indice = 0; indice < movimentacoes.size(); indice++) {
              System.out.println((indice + 1) + " - " + movimentacoes.get(indice));
          }
-         System.out.println("Operações confirmadas: " + movimentacoes.size());
-         System.out.println("Depósitos confirmados: " + quantidadeDepositos);
-         System.out.println("Saques confirmados: " + quantidadeSaques);
-         System.out.println("Total depositado: " + moeda.format(totalDepositado));
-         System.out.println("Total sacado: " + moeda.format(totalSacado));
+         mostrarTotaisMovimentacoes();
          System.out.println("Saldo atual: " + moeda.format(saldoFinal));
          System.out.println("Variação do saldo: " + moeda.format(saldoFinal.subtract(saldo)));
      }
