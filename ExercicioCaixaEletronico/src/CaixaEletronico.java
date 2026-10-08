@@ -279,6 +279,11 @@ public class CaixaEletronico {
      }
 
      public void sacar() {
+         if (saldoFinal.signum() == 0) {
+             System.out.println("Seu saldo está zerado. Faça um depósito antes de realizar um saque.");
+             return;
+         }
+
          while (true) {
              System.out.println(nome + " Informe o valor que deseja sacar (exemplo: 10,50) ou 0 para cancelar:");
              if (!scanner.hasNext()) {
