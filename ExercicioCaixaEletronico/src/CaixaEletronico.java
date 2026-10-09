@@ -204,6 +204,18 @@ public class CaixaEletronico {
          System.out.println("Obrigado por utilizar nosso caixa eletrônico!");
      }
 
+     private boolean validarValorMonetario(BigDecimal valor, String operacao) {
+         if (!Double.isFinite(valor.doubleValue())) {
+             System.out.println("Informe um valor válido para o " + operacao + ".");
+             return false;
+         }
+         if (valor.stripTrailingZeros().scale() > 2) {
+             System.out.println("Informe um valor com no máximo duas casas decimais para o " + operacao + ".");
+             return false;
+         }
+         return true;
+     }
+
      private boolean confirmarOperacao() {
          while (scanner.hasNext()) {
              String resposta = scanner.next();
@@ -301,13 +313,7 @@ public class CaixaEletronico {
                  continue;
              }
              saque = scanner.nextBigDecimal();
-             if (!Double.isFinite(saque.doubleValue())) {
-                 System.out.println("Informe um valor válido para o saque.");
-                 continue;
-             }
-
-             if (saque.stripTrailingZeros().scale() > 2) {
-                 System.out.println("Informe um valor com no máximo duas casas decimais para o saque.");
+             if (!validarValorMonetario(saque, "saque")) {
                  continue;
              }
 
@@ -361,13 +367,7 @@ public class CaixaEletronico {
                  continue;
              }
              deposito = scanner.nextBigDecimal();
-             if (!Double.isFinite(deposito.doubleValue())) {
-                 System.out.println("Informe um valor válido para o depósito.");
-                 continue;
-             }
-
-             if (deposito.stripTrailingZeros().scale() > 2) {
-                 System.out.println("Informe um valor com no máximo duas casas decimais para o depósito.");
+             if (!validarValorMonetario(deposito, "depósito")) {
                  continue;
              }
 
