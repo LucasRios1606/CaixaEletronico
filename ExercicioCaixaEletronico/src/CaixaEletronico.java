@@ -226,6 +226,10 @@ public class CaixaEletronico {
                  + " | Saldo: " + moeda.format(saldoFinal));
      }
 
+     private void mostrarMovimentacao(int numero) {
+         System.out.println(numero + " - " + movimentacoes.get(numero - 1));
+     }
+
      private void mostrarUltimaMovimentacao() {
          System.out.println("Última movimentação desta execução:");
          if (movimentacoes.isEmpty()) {
@@ -233,7 +237,7 @@ public class CaixaEletronico {
              return;
          }
          int numero = movimentacoes.size();
-         System.out.println(numero + " - " + movimentacoes.get(numero - 1));
+         mostrarMovimentacao(numero);
      }
 
      private void consultarMovimentacao() {
@@ -261,7 +265,7 @@ public class CaixaEletronico {
                  continue;
              }
              System.out.println("Movimentação consultada:");
-             System.out.println(numero + " - " + movimentacoes.get(numero - 1));
+             mostrarMovimentacao(numero);
          }
      }
 
@@ -271,7 +275,7 @@ public class CaixaEletronico {
              System.out.println("Nenhuma movimentação realizada.");
          }
          for (int indice = 0; indice < movimentacoes.size(); indice++) {
-             System.out.println((indice + 1) + " - " + movimentacoes.get(indice));
+             mostrarMovimentacao(indice + 1);
          }
          mostrarTotaisMovimentacoes();
          System.out.println("Saldo atual: " + moeda.format(saldoFinal));
