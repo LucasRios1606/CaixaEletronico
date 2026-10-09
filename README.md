@@ -60,3 +60,14 @@ O resumo da sessão (opção 8) mostra o saldo inicial, a quantidade de operaç�
 ## Dados durante a execução
 
 O saldo e o histórico ficam apenas na memória. Ao encerrar o programa, eles não são salvos. Uma nova execução começa com R$ 50.000,00 e o histórico vazio.
+
+## Teste de precisão dos centavos
+
+Na pasta principal do repositório, execute:
+
+```sh
+javac -encoding UTF-8 -d out ExercicioCaixaEletronico/src/CaixaEletronico.java ExercicioCaixaEletronico/test/CaixaEletronicoCentavosTest.java
+java -cp out CaixaEletronicoCentavosTest
+```
+
+O teste usa uma conta com saldo inicial zerado, deposita R$ 0,10 e R$ 0,20 e saca R$ 0,30. Ele confere o saldo exato, os totais e a quantidade de operações. Ao passar, exibe uma mensagem `OK`; se houver divergência, encerra com erro. Não precisa de bibliotecas adicionais nem da opção `-ea`.
