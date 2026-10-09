@@ -26,7 +26,7 @@ Informe os dados abaixo quando o programa solicitar:
 | Agência | 12345 |
 | Saldo inicial | R$ 50.000,00 |
 
-O nome e o banco aceitam letras maiúsculas ou minúsculas. Esses dados estão definidos no código e servem para a simulação.
+O nome e o banco aceitam letras maiúsculas ou minúsculas. O nome também aceita espaços repetidos entre as palavras. Digite `SAIR` ao informar nome, banco ou agência para encerrar a identificação. Esses dados estão definidos no código e servem para a simulação.
 
 ## Opções do menu
 
@@ -38,18 +38,24 @@ O nome e o banco aceitam letras maiúsculas ou minúsculas. Esses dados estão d
 | 4 | Ver histórico de movimentações e totais |
 | 5 | Consultar nome, banco e agência |
 | 6 | Consultar a última movimentação confirmada |
-| 7 | Consultar uma movimentação pelo número (0 cancela a consulta) |
+| 7 | Consultar movimentações pelo número (0 encerra a consulta) |
+| 8 | Consultar o resumo da sessão |
 | 0 | Sair, após confirmação |
 
 ## Saques e depósitos
 
 - Digite valores no padrão brasileiro, como `10,50` ou `1.234,56`, sem o símbolo `R$`.
 - Use valores positivos, sem frações de centavo. Digite `0` para cancelar e voltar ao menu.
-- Confira o valor e o saldo previsto. Digite `S` ou `SIM` para confirmar (maiúsculas ou minúsculas); outro valor cancela.
-- Saques acima do saldo são recusados, com indicação do saldo disponível e de quanto falta.
+- Confira o valor e o saldo previsto. Digite `S` ou `SIM` para confirmar, ou `N`, `NÃO` ou `NAO` para cancelar (maiúsculas ou minúsculas). Respostas diferentes fazem o programa pedir a confirmação novamente.
+- O saldo atual aparece antes de informar o valor da operação. Valores inválidos podem ser corrigidos sem voltar ao menu.
+- Saques acima do saldo são recusados, com indicação do saldo disponível e de quanto falta. Com saldo zerado, a opção de saque avisa e retorna ao menu.
 - Cada operação confirmada recebe um número correspondente à sua posição no histórico.
 
-O histórico mostra as operações confirmadas, com data, hora, valor e saldo após cada movimentação, além dos totais depositado e sacado. Operações canceladas ou recusadas não entram no histórico.
+O histórico mostra as operações confirmadas, com data, hora, valor e saldos anterior e posterior a cada movimentação, além das quantidades, totais e variação do saldo. Operações canceladas ou recusadas não entram no histórico.
+
+A consulta por número permanece aberta para consultar outras movimentações até digitar `0`. Se não houver movimentações, o programa avisa e retorna ao menu.
+
+O resumo da sessão (opção 8) mostra o saldo inicial, a quantidade de operações, os totais depositado e sacado, o saldo final e sua variação. Ele também aparece ao encerrar a sessão. Para confirmar a saída pela opção 0, use as mesmas respostas de confirmação ou cancelamento das operações.
 
 ## Dados durante a execução
 
