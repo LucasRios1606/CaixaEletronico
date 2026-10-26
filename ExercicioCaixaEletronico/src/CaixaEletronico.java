@@ -1,3 +1,6 @@
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.time.LocalDateTime;
@@ -7,13 +10,60 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Scanner;
 
-public class CaixaEletronico {
+public class CaixaEletronico implements AutoCloseable {
 
     public static void main(String[] args) {
-        CaixaEletronico caixa = new CaixaEletronico();
-        if (caixa.identificadorUsuario()) {
-            caixa.menu();
+        Path caminho = Paths.get(System.getProperty("caixa.arquivo", "dados/conta.properties"));
+        try (CaixaEletronico caixa = new CaixaEletronico(caminho)) {
+            if (caixa.identificadorUsuario()) {
+                System.out.println("Dados da conta: " + caminho.toAbsolutePath().normalize());
+                caixa.menu();
+            }
+        } catch (IOException erro) {
+            System.err.println("Não foi possível abrir ou fechar o arquivo da conta: " + erro.getMessage());
+            System.err.println("Verifique o arquivo e as permissões antes de tentar novamente.");
+            System.exit(1);
         }
+    }
+
+    private ArquivoConta arquivo;
+
+    /** Conta em memória para exercícios e testes que não precisam gravar dados. */
+    public CaixaEletronico() {
+    }
+
+    public CaixaEletronico(Path caminho) throws IOException {
+        arquivo = new ArquivoConta(caminho);
+        try {
+            ArquivoConta.Estado estado = arquivo.carregar();
+            if (estado != null) {
+                aplicarEstado(estado);
+            }
+        } catch (IOException | RuntimeException erro) {
+            try {
+                arquivo.close();
+            } catch (IOException erroFechamento) {
+                erro.addSuppressed(erroFechamento);
+            }
+            throw erro;
+        }
+    }
+
+    @Override
+    public void close() throws IOException {
+        if (arquivo != null) {
+            arquivo.close();
+        }
+    }
+
+    private void aplicarEstado(ArquivoConta.Estado estado) {
+        saldo = estado.inicial;
+        saldoFinal = estado.saldo;
+        totalDepositado = estado.depositado;
+        totalSacado = estado.sacado;
+        quantidadeDepositos = estado.depositos;
+        quantidadeSaques = estado.saques;
+        movimentacoes = new ArrayList<>(estado.historico);
     }
 
     String nome = "Lucas Rios de Souza Jordão";
@@ -112,7 +162,7 @@ public class CaixaEletronico {
             System.out.println("5 - Consultar dados da conta");
             System.out.println("6 - Consultar última movimentação");
             System.out.println("7 - Consultar movimentação pelo número");
-            System.out.println("8 - Consultar resumo da sessão");
+            System.out.println("8 - Consultar resumo da conta");
             System.out.println("0 - Sair");
             System.out.println("Escolha uma opção:");
 
@@ -153,10 +203,10 @@ public class CaixaEletronico {
                 consultarMovimentacao();
                 break;
                 case 8:
-                mostrarResumoSessao();
+                mostrarResumoConta();
                 break;
                 case 0:
-                System.out.println("Ao sair, o saldo e o histórico desta execução não serão salvos.");
+                System.out.println(arquivo == null ? "Conta em memória: os dados não serão salvos." : "As operações confirmadas já estão salvas.");
                 System.out.println("Deseja sair? Digite S ou SIM para confirmar ou N, NÃO ou NAO para voltar ao menu:");
                 if (!scanner.hasNext()) {
                     encerrarSessao();
@@ -182,8 +232,8 @@ public class CaixaEletronico {
         System.out.println("Total sacado: " + moeda.format(totalSacado));
     }
 
-    private void mostrarResumoSessao() {
-        System.out.println("Resumo da sessão:");
+    private void mostrarResumoConta() {
+        System.out.println("Resumo da conta:");
         System.out.println("Saldo inicial: " + moeda.format(saldo));
         mostrarTotaisMovimentacoes();
         System.out.println("Saldo final: " + moeda.format(saldoFinal));
@@ -191,7 +241,7 @@ public class CaixaEletronico {
     }
 
     private void encerrarSessao() {
-        mostrarResumoSessao();
+        mostrarResumoConta();
         System.out.println("Obrigado por utilizar nosso caixa eletrônico!");
     }
 
@@ -222,11 +272,28 @@ public class CaixaEletronico {
         return false;
     }
 
-    private void registrarMovimentacao(String tipo, BigDecimal valor, BigDecimal saldoAnterior) {
+    private boolean registrarMovimentacao(String tipo, BigDecimal valor, BigDecimal novoSaldo) {
+        boolean deposito = tipo.equals("Depósito");
+        List<String> historico = new ArrayList<>(movimentacoes);
         String dataHora = LocalDateTime.now().format(formatoDataHora);
-        movimentacoes.add(dataHora + " | " + tipo + ": " + moeda.format(valor)
-        + " | Saldo anterior: " + moeda.format(saldoAnterior)
-        + " | Saldo: " + moeda.format(saldoFinal));
+        historico.add(dataHora + " | " + tipo + ": " + moeda.format(valor)
+                + " | Saldo anterior: " + moeda.format(saldoFinal)
+                + " | Saldo: " + moeda.format(novoSaldo));
+        ArquivoConta.Estado estado = new ArquivoConta.Estado(saldo, novoSaldo,
+                deposito ? totalDepositado.add(valor) : totalDepositado,
+                deposito ? totalSacado : totalSacado.add(valor),
+                quantidadeDepositos + (deposito ? 1 : 0),
+                quantidadeSaques + (deposito ? 0 : 1), historico);
+        if (arquivo != null) {
+            try {
+                arquivo.salvar(estado);
+            } catch (IOException erro) {
+                System.out.println("Não foi possível salvar. Operação cancelada; saldo e histórico mantidos.");
+                return false;
+            }
+        }
+        aplicarEstado(estado);
+        return true;
     }
 
     private void mostrarMovimentacao(int numero) {
@@ -234,7 +301,7 @@ public class CaixaEletronico {
     }
 
     private void mostrarUltimaMovimentacao() {
-        System.out.println("Última movimentação desta execução:");
+        System.out.println("Última movimentação da conta:");
         if (movimentacoes.isEmpty()) {
             System.out.println("Nenhuma movimentação realizada.");
             return;
@@ -273,7 +340,7 @@ public class CaixaEletronico {
     }
 
     public void mostrarHistorico() {
-        System.out.println("Histórico de movimentações desta execução:");
+        System.out.println("Histórico de movimentações da conta:");
         if (movimentacoes.isEmpty()) {
             System.out.println("Nenhuma movimentação realizada.");
         }
@@ -332,11 +399,9 @@ public class CaixaEletronico {
                 System.out.println("Saque cancelado.");
                 return;
             }
-            BigDecimal saldoAnterior = saldoFinal;
-            saldoFinal = novoSaldo;
-            totalSacado = totalSacado.add(saque);
-            registrarMovimentacao("Saque", saque, saldoAnterior);
-            quantidadeSaques++;
+            if (!registrarMovimentacao("Saque", saque, novoSaldo)) {
+                return;
+            }
             System.out.println("Saque realizado com sucesso, seu saldo atual é de: " + moeda.format(saldoFinal));
             System.out.println("Número da movimentação no histórico: " + movimentacoes.size());
             return;
@@ -389,11 +454,9 @@ public class CaixaEletronico {
             return;
         }
 
-        BigDecimal saldoAnterior = saldoFinal;
-        saldoFinal = novoSaldo;
-        totalDepositado = totalDepositado.add(deposito);
-        registrarMovimentacao("Depósito", deposito, saldoAnterior);
-        quantidadeDepositos++;
+        if (!registrarMovimentacao("Depósito", deposito, novoSaldo)) {
+            return;
+        }
         System.out.println(nome + " seu depósito de " + moeda.format(deposito) + " foi realizado com sucesso!");
         System.out.println("Número da movimentação no histórico: " + movimentacoes.size());
         System.out.println();

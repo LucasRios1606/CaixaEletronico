@@ -73,7 +73,7 @@ public class CaixaEletronicoFluxosTest {
         });
         for (String mensagem : new String[] {"Opção inválida", "Movimentação não encontrada",
                 "Movimentação consultada:", "Dados da conta:", "Última movimentação",
-                "Saída cancelada.", "Resumo da sessão:", "Obrigado por utilizar"}) {
+                "Saída cancelada.", "Resumo da conta:", "Obrigado por utilizar"}) {
             contem(sessao, mensagem);
         }
         contem(executar("Consultas sem movimentações", "4 6 7", caixa -> {
