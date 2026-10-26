@@ -1,5 +1,7 @@
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Files;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
@@ -27,6 +29,7 @@ public class CaixaEletronico implements AutoCloseable {
     }
 
     private ArquivoConta arquivo;
+    Path pastaExtratos = Paths.get("dados", "extratos");
 
     /** Conta em memória para exercícios e testes que não precisam gravar dados. */
     public CaixaEletronico() {
@@ -34,6 +37,7 @@ public class CaixaEletronico implements AutoCloseable {
 
     public CaixaEletronico(Path caminho) throws IOException {
         arquivo = new ArquivoConta(caminho);
+        pastaExtratos = caminho.toAbsolutePath().normalize().getParent().resolve("extratos");
         try {
             ArquivoConta.Estado estado = arquivo.carregar();
             if (estado != null) {
@@ -163,6 +167,7 @@ public class CaixaEletronico implements AutoCloseable {
             System.out.println("6 - Consultar última movimentação");
             System.out.println("7 - Consultar movimentação pelo número");
             System.out.println("8 - Consultar resumo da conta");
+            System.out.println("9 - Exportar extrato em arquivo de texto");
             System.out.println("0 - Sair");
             System.out.println("Escolha uma opção:");
 
@@ -172,7 +177,7 @@ public class CaixaEletronico implements AutoCloseable {
             }
             if (!scanner.hasNextInt()) {
                 scanner.next();
-                System.out.println("Opção inválida! Digite um número inteiro de 0 a 8.");
+                System.out.println("Opção inválida! Digite um número inteiro de 0 a 9.");
                 continue;
             }
             opcao = scanner.nextInt();
@@ -205,6 +210,9 @@ public class CaixaEletronico implements AutoCloseable {
                 case 8:
                 mostrarResumoConta();
                 break;
+                case 9:
+                exportarExtrato();
+                break;
                 case 0:
                 System.out.println(arquivo == null ? "Conta em memória: os dados não serão salvos." : "As operações confirmadas já estão salvas.");
                 System.out.println("Deseja sair? Digite S ou SIM para confirmar ou N, NÃO ou NAO para voltar ao menu:");
@@ -219,17 +227,72 @@ public class CaixaEletronico implements AutoCloseable {
                 encerrarSessao();
                 return;
                 default:
-                System.out.println("Opção inválida! Digite um número inteiro de 0 a 8.");
+                System.out.println("Opção inválida! Digite um número inteiro de 0 a 9.");
             }
         } while (true);
     }
 
+    private List<String> linhasTotaisMovimentacoes() {
+        List<String> linhas = new ArrayList<>();
+        linhas.add("Operações confirmadas: " + movimentacoes.size());
+        linhas.add("Depósitos confirmados: " + quantidadeDepositos);
+        linhas.add("Saques confirmados: " + quantidadeSaques);
+        linhas.add("Total depositado: " + moeda.format(totalDepositado));
+        linhas.add("Total sacado: " + moeda.format(totalSacado));
+        return linhas;
+    }
+
     private void mostrarTotaisMovimentacoes() {
-        System.out.println("Operações confirmadas: " + movimentacoes.size());
-        System.out.println("Depósitos confirmados: " + quantidadeDepositos);
-        System.out.println("Saques confirmados: " + quantidadeSaques);
-        System.out.println("Total depositado: " + moeda.format(totalDepositado));
-        System.out.println("Total sacado: " + moeda.format(totalSacado));
+        linhasTotaisMovimentacoes().forEach(System.out::println);
+    }
+
+    private void exportarExtrato() {
+        try {
+            Path destino = exportarExtrato(pastaExtratos);
+            System.out.println("Extrato exportado com sucesso: " + destino);
+        } catch (IOException erro) {
+            System.out.println("Não foi possível exportar o extrato. Verifique a pasta e as permissões.");
+        }
+    }
+
+    /** Gera uma cópia legível da conta, sem alterar saldo, histórico ou extratos anteriores. */
+    public Path exportarExtrato(Path pasta) throws IOException {
+        LocalDateTime agora = LocalDateTime.now();
+        List<String> linhas = new ArrayList<>();
+        linhas.add("EXTRATO DO CAIXA ELETRÔNICO - SIMULAÇÃO");
+        linhas.add("Emitido em: " + agora.format(formatoDataHora));
+        linhas.add("Nome: " + nome);
+        linhas.add("Banco: " + banco);
+        linhas.add("Agência: " + agencia);
+        linhas.add("");
+        linhas.add("Histórico completo de movimentações:");
+        if (movimentacoes.isEmpty()) {
+            linhas.add("Nenhuma movimentação realizada.");
+        }
+        for (int i = 0; i < movimentacoes.size(); i++) {
+            linhas.add((i + 1) + " - " + movimentacoes.get(i));
+        }
+        linhas.add("");
+        linhas.add("Resumo acumulado da conta:");
+        linhas.add("Saldo inicial: " + moeda.format(saldo));
+        linhas.addAll(linhasTotaisMovimentacoes());
+        linhas.add("Saldo atual: " + moeda.format(saldoFinal));
+        linhas.add("Variação do saldo: " + moeda.format(saldoFinal.subtract(saldo)));
+        Path diretorio = pasta.toAbsolutePath().normalize();
+        Files.createDirectories(diretorio);
+        String prefixo = "extrato-" + agora.format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss")) + "-";
+        Path destino = Files.createTempFile(diretorio, prefixo, ".txt");
+        try {
+            Files.write(destino, linhas, StandardCharsets.UTF_8);
+        } catch (IOException erro) {
+            try {
+                Files.deleteIfExists(destino);
+            } catch (IOException erroLimpeza) {
+                erro.addSuppressed(erroLimpeza);
+            }
+            throw erro;
+        }
+        return destino;
     }
 
     private void mostrarResumoConta() {

@@ -40,6 +40,7 @@ O nome e o banco aceitam letras maiúsculas ou minúsculas. O nome também aceit
 | 6 | Consultar a última movimentação confirmada |
 | 7 | Consultar movimentações pelo número (0 encerra a consulta) |
 | 8 | Consultar o resumo da conta |
+| 9 | Exportar extrato em arquivo de texto |
 | 0 | Sair, após confirmação |
 
 ## Saques e depósitos
@@ -70,15 +71,26 @@ Cada saque ou depósito confirmado é salvo imediatamente, junto com saldo, hist
 
 A pasta `dados/` não é enviada ao GitHub. Faça uma cópia do arquivo com o programa fechado se quiser guardar um backup. O arquivo é local e não criptografado; este simulador não oferece segurança bancária nem validação contra adulteração intencional.
 
+## Exportar extrato
+
+Escolha a opção **9** para gerar um arquivo `.txt` com os dados da conta, data e hora de emissão, histórico completo numerado, saldo inicial, saldo atual, totais e variação do saldo. Uma conta sem operações também pode gerar extrato.
+
+O programa informa o caminho completo do arquivo e retorna ao menu. Os extratos ficam na subpasta `extratos` ao lado do arquivo da conta — por padrão, `dados/extratos/`. Se usar `-Dcaixa.arquivo`, essa pasta acompanha o local configurado.
+
+Cada exportação recebe um nome com data, hora e identificador exclusivo. Extratos anteriores são preservados. Exportar não altera saldo nem histórico e inclui as operações recuperadas de execuções anteriores. Se houver falha de gravação, o programa informa o problema e continua no menu.
+
+Os arquivos usam UTF-8 e podem ser abertos em um editor de texto. São relatórios da simulação; não substituem o arquivo `conta.properties` para recuperar a conta. Os extratos na pasta padrão `dados/` também ficam fora do GitHub.
+
 ## Testes automatizados
 
-Na pasta principal do repositório, compile a aplicação e os três testes:
+Na pasta principal do repositório, compile a aplicação e os quatro testes:
 
 ```sh
-javac -encoding UTF-8 -d out ExercicioCaixaEletronico/src/CaixaEletronico.java ExercicioCaixaEletronico/src/ArquivoConta.java ExercicioCaixaEletronico/test/CaixaEletronicoCentavosTest.java ExercicioCaixaEletronico/test/CaixaEletronicoFluxosTest.java ExercicioCaixaEletronico/test/CaixaEletronicoPersistenciaTest.java
+javac -encoding UTF-8 -d out ExercicioCaixaEletronico/src/CaixaEletronico.java ExercicioCaixaEletronico/src/ArquivoConta.java ExercicioCaixaEletronico/test/CaixaEletronicoCentavosTest.java ExercicioCaixaEletronico/test/CaixaEletronicoFluxosTest.java ExercicioCaixaEletronico/test/CaixaEletronicoPersistenciaTest.java ExercicioCaixaEletronico/test/CaixaEletronicoExtratoTest.java
 java -cp out CaixaEletronicoCentavosTest
 java -cp out CaixaEletronicoFluxosTest
 java -cp out CaixaEletronicoPersistenciaTest
+java -cp out CaixaEletronicoExtratoTest
 ```
 
 Os testes não precisam de bibliotecas adicionais nem da opção `-ea`. Cada classe imprime `OK` quando termina com sucesso; uma falha encerra a execução com erro.
@@ -86,6 +98,7 @@ Os testes não precisam de bibliotecas adicionais nem da opção `-ea`. Cada cla
 - **Precisão dos centavos:** deposita R$ 0,10 e R$ 0,20 e saca R$ 0,30, conferindo saldo, totais e quantidade de operações.
 - **43 cenários de fluxo:** verificam cancelamento por zero, confirmação negativa e fim da entrada; valores não numéricos, negativos, frações de centavo e valores excessivos; saldo insuficiente e zerado; correção de entradas; separador de milhar; identificação; consultas e encerramento pelo menu.
 - **Persistência:** 20 cenários verificam reabertura, precisão, histórico acumulado, cancelamentos, falhas de gravação, arquivo inválido, bloqueio de acesso simultâneo e duas execuções reais do programa.
+- **Extratos:** 6 cenários verificam conta vazia, valores e movimentações, exportações repetidas, dados recuperados, opção 9 e falha de gravação sem alteração da conta.
 - **Sessão completa:** identifica a conta, deposita, saca, consulta saldo, histórico, dados e resumo, cancela uma saída e depois encerra. Confere o estado final e as mensagens esperadas.
 
 ## Escopo da primeira versão
