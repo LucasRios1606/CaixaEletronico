@@ -1,18 +1,7 @@
-## Getting Started
+# Exercício Caixa Eletrônico
 
-Welcome to the VS Code Java world. Here is a guideline to help you get started to write Java code in Visual Studio Code.
+Aplicação Java de terminal. O código principal está em `src/CaixaEletronico.java` e os testes automatizados estão em `test/`.
 
-## Folder Structure
+Consulte o [README principal](../README.md) para os dados da conta de exemplo, opções do menu, limitações e comandos de execução e teste. Execute esses comandos a partir da pasta principal do repositório.
 
-The workspace contains two folders by default, where:
-
-- `src`: the folder to maintain sources
-- `lib`: the folder to maintain dependencies
-
-Meanwhile, the compiled output files will be generated in the `bin` folder by default.
-
-> If you want to customize the folder structure, open `.vscode/settings.json` and update the related settings there.
-
-## Dependency Management
-
-The `JAVA PROJECTS` view allows you to manage your dependencies. More details can be found [here](https://github.com/microsoft/vscode-java-dependency#manage-dependencies).
+Os demais arquivos em `src/` são exercícios independentes.

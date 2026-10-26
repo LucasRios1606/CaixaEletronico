@@ -4,7 +4,7 @@ Simulador de caixa eletrônico em Java, executado no terminal, para praticar ent
 
 ## Como executar
 
-Tenha um JDK instalado e os comandos `java` e `javac` disponíveis no terminal. A execução abaixo foi verificada com JDK 21.
+Tenha um JDK instalado e os comandos `java` e `javac` disponíveis no terminal. A execução e os testes também foram verificados com JDK 25. Use `java` e `javac` do mesmo JDK.
 
 Na pasta principal do repositório, compile e execute:
 
@@ -61,13 +61,24 @@ O resumo da sessão (opção 8) mostra o saldo inicial, a quantidade de operaç�
 
 O saldo e o histórico ficam apenas na memória. Ao encerrar o programa, eles não são salvos. Uma nova execução começa com R$ 50.000,00 e o histórico vazio.
 
-## Teste de precisão dos centavos
+## Testes automatizados
 
-Na pasta principal do repositório, execute:
+Na pasta principal do repositório, compile a aplicação e os dois testes:
 
 ```sh
-javac -encoding UTF-8 -d out ExercicioCaixaEletronico/src/CaixaEletronico.java ExercicioCaixaEletronico/test/CaixaEletronicoCentavosTest.java
+javac -encoding UTF-8 -d out ExercicioCaixaEletronico/src/CaixaEletronico.java ExercicioCaixaEletronico/test/CaixaEletronicoCentavosTest.java ExercicioCaixaEletronico/test/CaixaEletronicoFluxosTest.java
 java -cp out CaixaEletronicoCentavosTest
+java -cp out CaixaEletronicoFluxosTest
 ```
 
-O teste usa uma conta com saldo inicial zerado, deposita R$ 0,10 e R$ 0,20 e saca R$ 0,30. Ele confere o saldo exato, os totais e a quantidade de operações. Ao passar, exibe uma mensagem `OK`; se houver divergência, encerra com erro. Não precisa de bibliotecas adicionais nem da opção `-ea`.
+Os testes não precisam de bibliotecas adicionais nem da opção `-ea`. Cada classe imprime `OK` quando termina com sucesso; uma falha encerra a execução com erro.
+
+- **Precisão dos centavos:** deposita R$ 0,10 e R$ 0,20 e saca R$ 0,30, conferindo saldo, totais e quantidade de operações.
+- **43 cenários de fluxo:** verificam cancelamento por zero, confirmação negativa e fim da entrada; valores não numéricos, negativos, frações de centavo e valores excessivos; saldo insuficiente e zerado; correção de entradas; separador de milhar; identificação; consultas e encerramento pelo menu.
+- **Sessão completa:** identifica a conta, deposita, saca, consulta saldo, histórico, dados e resumo, cancela uma saída e depois encerra. Confere o estado final e as mensagens esperadas.
+
+## Escopo da primeira versão
+
+Esta versão é um projeto de estudo em Java no terminal, com uma única conta de exemplo. A identificação usa os dados informados acima e não possui senha. O saldo e as movimentações são mantidos somente durante a sessão.
+
+Persistência em arquivo ou banco de dados, várias contas e interface gráfica ficam como possíveis evoluções. Os arquivos `App.java`, `ForArray.java` e `joguinho.java` são exercícios separados; o ponto de entrada do caixa é `CaixaEletronico`.
