@@ -168,6 +168,7 @@ public class CaixaEletronico implements AutoCloseable {
             System.out.println("7 - Consultar movimentação pelo número");
             System.out.println("8 - Consultar resumo da conta");
             System.out.println("9 - Exportar extrato em arquivo de texto");
+            System.out.println("10 - Filtrar histórico por saques ou depósitos");
             System.out.println("0 - Sair");
             System.out.println("Escolha uma opção:");
 
@@ -177,7 +178,7 @@ public class CaixaEletronico implements AutoCloseable {
             }
             if (!scanner.hasNextInt()) {
                 scanner.next();
-                System.out.println("Opção inválida! Digite um número inteiro de 0 a 9.");
+                System.out.println("Opção inválida! Digite um número inteiro de 0 a 10.");
                 continue;
             }
             opcao = scanner.nextInt();
@@ -213,6 +214,9 @@ public class CaixaEletronico implements AutoCloseable {
                 case 9:
                 exportarExtrato();
                 break;
+                case 10:
+                consultarHistoricoPorTipo();
+                break;
                 case 0:
                 System.out.println(arquivo == null ? "Conta em memória: os dados não serão salvos." : "As operações confirmadas já estão salvas.");
                 System.out.println("Deseja sair? Digite S ou SIM para confirmar ou N, NÃO ou NAO para voltar ao menu:");
@@ -227,7 +231,7 @@ public class CaixaEletronico implements AutoCloseable {
                 encerrarSessao();
                 return;
                 default:
-                System.out.println("Opção inválida! Digite um número inteiro de 0 a 9.");
+                System.out.println("Opção inválida! Digite um número inteiro de 0 a 10.");
             }
         } while (true);
     }
@@ -399,6 +403,52 @@ public class CaixaEletronico implements AutoCloseable {
             }
             System.out.println("Movimentação consultada:");
             mostrarMovimentacao(numero);
+        }
+    }
+
+    public void consultarHistoricoPorTipo() {
+        if (movimentacoes.isEmpty()) {
+            System.out.println("Nenhuma movimentação realizada.");
+            return;
+        }
+        while (true) {
+            System.out.println("Filtrar histórico: 1 - Saques | 2 - Depósitos | 0 - Voltar ao menu");
+            if (!scanner.hasNext()) {
+                return;
+            }
+            if (!scanner.hasNextInt()) {
+                scanner.next();
+                System.out.println("Filtro inválido. Digite 1, 2 ou 0.");
+                continue;
+            }
+            int filtro = scanner.nextInt();
+            if (filtro == 0) {
+                System.out.println("Consulta encerrada.");
+                return;
+            }
+            if (filtro != 1 && filtro != 2) {
+                System.out.println("Filtro inválido. Digite 1, 2 ou 0.");
+                continue;
+            }
+            String tipo = filtro == 1 ? "Saque" : "Depósito";
+            System.out.println(filtro == 1 ? "Histórico de saques:" : "Histórico de depósitos:");
+            int encontrados = 0;
+            for (int indice = 0; indice < movimentacoes.size(); indice++) {
+                String registro = movimentacoes.get(indice);
+                // O tipo vem após a data no formato já salvo no arquivo da conta.
+                int separador = registro.indexOf(" | ");
+                if (separador >= 0 && registro.startsWith(tipo + ": ", separador + 3)) {
+                    mostrarMovimentacao(indice + 1);
+                    encontrados++;
+                }
+            }
+            if (encontrados == 0) {
+                System.out.println(filtro == 1 ? "Nenhum saque realizado." : "Nenhum depósito realizado.");
+            }
+            System.out.println("Movimentações encontradas: " + encontrados);
+            System.out.println(filtro == 1
+                    ? "Total sacado: " + moeda.format(totalSacado)
+                    : "Total depositado: " + moeda.format(totalDepositado));
         }
     }
 

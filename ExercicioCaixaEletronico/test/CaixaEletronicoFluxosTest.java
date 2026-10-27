@@ -63,7 +63,7 @@ public class CaixaEletronicoFluxosTest {
             verificar(caixa.identificadorUsuario(), "Conta deveria ser reconhecida");
         });
         String sessao = executar("Sessão completa", "Lucas Rios de Souza Jordão\nSantander\n12345\n"
-                + "abc 10 1 3 10,50 S 2 5,25 SIM 4 5 6 7 abc 9 1 0 8 0 N 1 0 SIM", caixa -> {
+                + "abc 11 1 3 10,50 S 2 5,25 SIM 4 5 6 7 abc 9 1 0 8 0 N 1 0 SIM", caixa -> {
             verificar(caixa.identificadorUsuario(), "Identificação deveria funcionar");
             caixa.menu();
             estado(caixa, "105.25", "10.50", "5.25", 1, 1);
