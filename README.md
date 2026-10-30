@@ -2,7 +2,36 @@
 
 Simulador de caixa eletrônico em Java, executado no terminal, para praticar entrada de dados, validações e operações com uma conta de exemplo.
 
-## Como executar
+## Início rápido no Windows
+
+Baixe ou clone o repositório e abra um terminal na pasta principal. É necessário um **JDK**, que contém `java` e `javac`; somente o Java Runtime (JRE) não é suficiente.
+
+No PowerShell, inicie o caixa com:
+
+```powershell
+.\executar.cmd
+```
+
+Para compilar e executar todos os testes:
+
+```powershell
+.\testar.cmd
+```
+
+Os comandos compilam os fontes antes de executar. Usam primeiro `JAVA_HOME`; se essa variável não estiver definida, procuram `javac.exe` no `PATH` e usam o `java.exe` da mesma pasta. Se o JDK não for encontrado, mostram uma orientação e encerram com erro.
+
+Se precisar indicar o JDK apenas no terminal atual, use o caminho da sua instalação (sem `bin`):
+
+```powershell
+$env:JAVA_HOME = 'C:\caminho\do\seu\jdk'
+.\executar.cmd
+```
+
+Você também pode chamar os scripts pelo caminho completo a partir de outra pasta. Eles sempre executam na raiz do projeto: a conta fica em `dados/conta.properties`, os extratos em `dados/extratos/` e as classes compiladas em `out/`. Ao terminar, a pasta original do terminal é restaurada.
+
+Se já usava um arquivo de conta em outra pasta, continue com o comando manual e `-Dcaixa.arquivo` abaixo, ou copie esse arquivo para `dados/conta.properties` na raiz, com o programa fechado e sem sobrescrever outra conta existente.
+
+## Como executar manualmente
 
 Tenha um JDK instalado e os comandos `java` e `javac` disponíveis no terminal. A execução e os testes também foram verificados com JDK 25. Use `java` e `javac` do mesmo JDK.
 
@@ -13,7 +42,7 @@ javac -encoding UTF-8 -d out ExercicioCaixaEletronico/src/CaixaEletronico.java E
 java -cp out CaixaEletronico
 ```
 
-A pasta `out` recebe as classes compiladas. Compile novamente após alterar o código.
+A pasta `out` recebe as classes compiladas. Nos comandos manuais, compile novamente após alterar o código. Os arquivos `.class` são gerados localmente e não fazem parte do código versionado.
 
 ## Dados da conta de exemplo
 
@@ -92,7 +121,7 @@ Os arquivos usam UTF-8 e podem ser abertos em um editor de texto. São relatóri
 
 ## Testes automatizados
 
-Na pasta principal do repositório, compile a aplicação e os cinco testes:
+No Windows, `.\testar.cmd` executa as cinco classes de teste e para na primeira falha. O script mantém as contas de teste em `out/testes-temporarios/` e não altera a conta em `dados/`. Para executar manualmente em um terminal, compile a aplicação e os cinco testes:
 
 ```sh
 javac -encoding UTF-8 -d out ExercicioCaixaEletronico/src/CaixaEletronico.java ExercicioCaixaEletronico/src/ArquivoConta.java ExercicioCaixaEletronico/test/CaixaEletronicoCentavosTest.java ExercicioCaixaEletronico/test/CaixaEletronicoFluxosTest.java ExercicioCaixaEletronico/test/CaixaEletronicoPersistenciaTest.java ExercicioCaixaEletronico/test/CaixaEletronicoExtratoTest.java ExercicioCaixaEletronico/test/CaixaEletronicoFiltroTest.java
