@@ -1,148 +1,112 @@
-# CaixaEletronico
+# Caixa Eletrônico — terminal e localhost
 
-Simulador de caixa eletrônico em Java, executado no terminal, para praticar entrada de dados, validações e operações com uma conta de exemplo.
+Simulador em Java com duas interfaces: terminal operado por números e tela no navegador. As duas usam as mesmas operações, saldo e histórico, com salvamento em arquivo. Não há dinheiro real, senha ou conexão com bancos.
 
-## Início rápido no Windows
+## Iniciar no Windows
 
-Baixe ou clone o repositório e abra um terminal na pasta principal. É necessário um **JDK**, que contém `java` e `javac`; somente o Java Runtime (JRE) não é suficiente.
+É necessário um **JDK 11 ou superior**, com `java` e `javac` da mesma instalação. Validado com JDK 25. Abra o PowerShell na raiz do repositório:
 
-No PowerShell, inicie o caixa com:
+| Comando | O que abre |
+| --- | --- |
+| `.\executar.cmd` | Terminal e navegador juntos |
+| `.\terminal.cmd` | Somente o terminal |
+| `.\web.cmd` | Somente a tela no navegador |
+| `.\testar.cmd` | Compila e executa todos os testes |
 
-```powershell
-.\executar.cmd
-```
+No modo web ou conjunto, a tela fica em **http://localhost:8081/**. Os scripts tentam abrir o navegador padrão; se ele não abrir, acesse esse endereço manualmente. O terminal precisa continuar aberto enquanto você usa a página.
 
-Para compilar e executar todos os testes:
+Para escolher outra porta: `.\web.cmd 8090` ou `.\executar.cmd ambos 8090`. Se a porta estiver ocupada, o programa avisa e encerra. O servidor aceita apenas conexões da própria máquina.
 
-```powershell
-.\testar.cmd
-```
+No modo conjunto, sair do terminal com `0` e confirmar com `1` também encerra o servidor. No modo somente web, use `Ctrl+C` no terminal. Fechar a aba não encerra o programa.
 
-Os comandos compilam os fontes antes de executar. Usam primeiro `JAVA_HOME`; se essa variável não estiver definida, procuram `javac.exe` no `PATH` e usam o `java.exe` da mesma pasta. Se o JDK não for encontrado, mostram uma orientação e encerram com erro.
-
-Se precisar indicar o JDK apenas no terminal atual, use o caminho da sua instalação (sem `bin`):
+Os scripts compilam antes de iniciar e usam primeiro `JAVA_HOME`. Se ela não estiver definida, procuram `javac.exe` no `PATH` e usam o `java.exe` da mesma pasta. Na ausência de ambos, tentam o JDK incluído na extensão Java do VS Code. Se necessário, indique o seu JDK no terminal atual:
 
 ```powershell
 $env:JAVA_HOME = 'C:\caminho\do\seu\jdk'
 .\executar.cmd
 ```
 
-Você também pode chamar os scripts pelo caminho completo a partir de outra pasta. Eles sempre executam na raiz do projeto: a conta fica em `dados/conta.properties`, os extratos em `dados/extratos/` e as classes compiladas em `out/`. Ao terminar, a pasta original do terminal é restaurada.
+Os scripts executam sempre na raiz do projeto, mesmo chamados de outra pasta, e restauram a pasta original do terminal ao terminar. Classes geradas ficam em `out/` e não são versionadas.
 
-Se já usava um arquivo de conta em outra pasta, continue com o comando manual e `-Dcaixa.arquivo` abaixo, ou copie esse arquivo para `dados/conta.properties` na raiz, com o programa fechado e sem sobrescrever outra conta existente.
+## Terminal: números e Enter
 
-## Como executar manualmente
+Na entrada, digite `1` para acessar a conta demonstrativa ou `0` para encerrar. Os dados da conta são apresentados automaticamente, sem pedir nome ou banco por texto.
 
-Tenha um JDK instalado e os comandos `java` e `javac` disponíveis no terminal. A execução e os testes também foram verificados com JDK 25. Use `java` e `javac` do mesmo JDK.
+Todas as confirmações usam **1 — Confirmar** e **0 — Cancelar**. Valores são digitados em **centavos, somente com algarismos**, sem vírgula, ponto ou símbolo:
 
-Na pasta principal do repositório, compile e execute:
-
-```sh
-javac -encoding UTF-8 -d out ExercicioCaixaEletronico/src/CaixaEletronico.java ExercicioCaixaEletronico/src/ArquivoConta.java
-java -cp out CaixaEletronico
-```
-
-A pasta `out` recebe as classes compiladas. Nos comandos manuais, compile novamente após alterar o código. Os arquivos `.class` são gerados localmente e não fazem parte do código versionado.
-
-## Dados da conta de exemplo
-
-Informe os dados abaixo quando o programa solicitar:
-
-| Campo | Valor |
+| Digite | Valor |
 | --- | --- |
-| Nome | Lucas Rios de Souza Jordão |
-| Banco | Santander |
-| Agência | 12345 |
-| Saldo inicial da primeira execução | R$ 50.000,00 |
+| `1` | R$ 0,01 |
+| `1050` | R$ 10,50 |
+| `10000` | R$ 100,00 |
+| `0` | Cancelar a operação |
 
-O nome e o banco aceitam letras maiúsculas ou minúsculas. O nome também aceita espaços repetidos entre as palavras. Digite `SAIR` ao informar nome, banco ou agência para encerrar a identificação. Esses dados estão definidos no código e servem para a simulação.
-
-## Opções do menu
+Exemplo de depósito: acesse com `1`, escolha `3`, digite `1050` e confirme com `1`. O terminal mostra o valor em reais antes de confirmar. Letras, negativos e separadores são recusados no fluxo numérico.
 
 | Opção | Ação |
 | --- | --- |
 | 1 | Consultar saldo |
 | 2 | Sacar |
 | 3 | Depositar |
-| 4 | Ver histórico de movimentações e totais |
-| 5 | Consultar nome, banco e agência |
-| 6 | Consultar a última movimentação confirmada |
-| 7 | Consultar movimentações pelo número (0 encerra a consulta) |
-| 8 | Consultar o resumo da conta |
-| 9 | Exportar extrato em arquivo de texto |
-| 10 | Filtrar histórico por saques ou depósitos |
-| 0 | Sair, após confirmação |
+| 4 | Histórico completo e totais |
+| 5 | Dados da conta |
+| 6 | Última movimentação |
+| 7 | Consultar pelo número; 0 encerra a consulta |
+| 8 | Resumo acumulado |
+| 9 | Exportar extrato em texto |
+| 10 | Filtrar histórico: 1 saques, 2 depósitos, 0 voltar |
+| 0 | Encerrar, após confirmação |
 
-## Saques e depósitos
+Os filtros preservam os números originais das movimentações. Operações canceladas ou recusadas não alteram saldo, totais nem histórico.
 
-- Digite valores no padrão brasileiro, como `10,50` ou `1.234,56`, sem o símbolo `R$`.
-- Use valores positivos, sem frações de centavo. Digite `0` para cancelar e voltar ao menu.
-- Confira o valor e o saldo previsto. Digite `S` ou `SIM` para confirmar, ou `N`, `NÃO` ou `NAO` para cancelar (maiúsculas ou minúsculas). Respostas diferentes fazem o programa pedir a confirmação novamente.
-- O saldo atual aparece antes de informar o valor da operação. Valores inválidos podem ser corrigidos sem voltar ao menu.
-- Saques acima do saldo são recusados, com indicação do saldo disponível e de quanto falta. Com saldo zerado, a opção de saque avisa e retorna ao menu.
-- Cada operação confirmada recebe um número correspondente à sua posição no histórico.
+## Tela no navegador
 
-O histórico mostra as operações confirmadas, com data, hora, valor e saldos anterior e posterior a cada movimentação, além das quantidades, totais e variação do saldo. Operações canceladas ou recusadas não entram no histórico.
+A tela mostra saldo, identificação da conta, saques, depósitos e histórico. Selecione a operação, informe o valor em reais (por exemplo, `10,50` ou `10.50`) e confira a prévia antes de confirmar. O botão **Voltar** cancela sem movimentar dinheiro.
 
-A consulta por número permanece aberta para consultar outras movimentações até digitar `0`. Se não houver movimentações, o programa avisa e retorna ao menu.
+Você pode ocultar os valores, filtrar saques ou depósitos e baixar um extrato completo em `.txt`. A página atualiza o saldo automaticamente a cada três segundos e oferece atualização manual. Se o servidor parar, ela informa a desconexão.
 
-O resumo acumulado da conta (opção 8) mostra o saldo inicial, a quantidade de operações, os totais depositado e sacado, o saldo final e sua variação. Ele também aparece ao encerrar a sessão. Para confirmar a saída pela opção 0, use as mesmas respostas de confirmação ou cancelamento das operações.
+No modo **ambos**, uma operação feita em qualquer interface aparece na outra. A validação usa o saldo no instante da confirmação; se ele tiver mudado, um saque sem saldo é recusado. Pedidos repetidos com o mesmo identificador não duplicam uma operação na mesma sessão do servidor.
 
-## Salvamento e recuperação dos dados
+## Conta e persistência
 
-Ao executar `CaixaEletronico`, o programa recupera a conta do arquivo `dados/conta.properties`, relativo à pasta em que o comando foi executado. Se o arquivo ainda não existir, começa com R$ 50.000,00 e histórico vazio. Execute sempre da mesma pasta para usar a mesma conta.
+A conta demonstrativa é de Lucas Rios de Souza Jordão, banco Santander, agência 12345. **Somente uma conta nova** começa com R$ 50.000,00 fictícios. Uma conta existente mantém o saldo e o histórico já salvos; a integração web não reinicia os dados.
 
-Cada saque ou depósito confirmado é salvo imediatamente, junto com saldo, histórico, totais e contagens. Fechar e reabrir o programa mantém esses dados; as consultas e o resumo incluem todas as execuções. Cancelamentos e valores recusados não alteram o arquivo.
+- Conta: `dados/conta.properties` na raiz do projeto.
+- Extratos exportados pelo terminal: `dados/extratos/`, com nomes exclusivos.
+- Extratos baixados pela web: pasta de downloads escolhida pelo navegador.
+- Testes: contas temporárias em `out/testes-temporarios/`.
 
-- A gravação usa um arquivo temporário e substituição atômica. Se não for possível gravar, a operação é cancelada e o saldo em memória permanece igual. O sistema de arquivos precisa suportar substituição atômica.
-- Se o arquivo estiver inválido, incompleto ou inacessível, o programa encerra com uma mensagem e código de erro, sem reiniciar o saldo nem sobrescrever o conteúdo. Corrija o problema ou restaure uma cópia válida antes de abrir novamente.
-- Só uma instância pode usar o mesmo arquivo por vez. O arquivo auxiliar `.lock` pode permanecer na pasta após sair; o bloqueio é liberado ao fechar o programa.
-- Para testar uma conta separada ou usar um caminho fixo, informe a propriedade antes de `-cp`: `java "-Dcaixa.arquivo=C:/caminho/minha-conta.properties" -cp out CaixaEletronico`.
+Saques e depósitos são salvos antes de anunciar sucesso. Se a gravação falhar, a operação é cancelada. Um arquivo inválido ou inacessível não é sobrescrito nem substituído por uma conta nova. O sistema de arquivos deve suportar substituição atômica.
 
-A pasta `dados/` não é enviada ao GitHub. Faça uma cópia do arquivo com o programa fechado se quiser guardar um backup. O arquivo é local e não criptografado; este simulador não oferece segurança bancária nem validação contra adulteração intencional.
+Somente um processo pode abrir o mesmo arquivo de conta por vez. Para usar as duas interfaces simultaneamente, escolha **ambos**, em vez de iniciar `terminal.cmd` e `web.cmd` separados. O arquivo `.lock` pode permanecer no disco após sair; o bloqueio é liberado ao encerrar.
 
-## Filtrar histórico
+Se você usava uma conta em outra pasta, execute manualmente com `-Dcaixa.arquivo`, ou copie seu arquivo para a raiz com o programa fechado, sem sobrescrever outra conta existente. Faça backups com o programa fechado. Arquivos em `dados/` ficam fora do GitHub; o conteúdo é local e não criptografado.
 
-A opção **10** permite consultar somente **1 — Saques** ou **2 — Depósitos**. Cada consulta mostra as movimentações do tipo escolhido, a quantidade encontrada e o total acumulado desse tipo. Digite `0` para voltar ao menu principal; você pode alternar entre os filtros enquanto a consulta estiver aberta.
+## Execução manual
 
-Os números originais são mantidos: se os depósitos forem as movimentações 1 e 3, eles continuarão aparecendo como 1 e 3. Assim, você pode usar esses números na consulta da opção 7.
-
-O filtro inclui movimentações recuperadas de execuções anteriores e não altera a conta. Entradas inválidas podem ser corrigidas. Se não houver operações do tipo escolhido, o programa avisa; se todo o histórico estiver vazio, retorna diretamente ao menu. O histórico completo (opção 4) e o extrato (opção 9) continuam mostrando todas as operações.
-
-## Exportar extrato
-
-Escolha a opção **9** para gerar um arquivo `.txt` com os dados da conta, data e hora de emissão, histórico completo numerado, saldo inicial, saldo atual, totais e variação do saldo. Uma conta sem operações também pode gerar extrato.
-
-O programa informa o caminho completo do arquivo e retorna ao menu. Os extratos ficam na subpasta `extratos` ao lado do arquivo da conta — por padrão, `dados/extratos/`. Se usar `-Dcaixa.arquivo`, essa pasta acompanha o local configurado.
-
-Cada exportação recebe um nome com data, hora e identificador exclusivo. Extratos anteriores são preservados. Exportar não altera saldo nem histórico e inclui as operações recuperadas de execuções anteriores. Se houver falha de gravação, o programa informa o problema e continua no menu.
-
-Os arquivos usam UTF-8 e podem ser abertos em um editor de texto. São relatórios da simulação; não substituem o arquivo `conta.properties` para recuperar a conta. Os extratos na pasta padrão `dados/` também ficam fora do GitHub.
-
-## Testes automatizados
-
-No Windows, `.\testar.cmd` executa as cinco classes de teste e para na primeira falha. O script mantém as contas de teste em `out/testes-temporarios/` e não altera a conta em `dados/`. Para executar manualmente em um terminal, compile a aplicação e os cinco testes:
+A partir da raiz do repositório:
 
 ```sh
-javac -encoding UTF-8 -d out ExercicioCaixaEletronico/src/CaixaEletronico.java ExercicioCaixaEletronico/src/ArquivoConta.java ExercicioCaixaEletronico/test/CaixaEletronicoCentavosTest.java ExercicioCaixaEletronico/test/CaixaEletronicoFluxosTest.java ExercicioCaixaEletronico/test/CaixaEletronicoPersistenciaTest.java ExercicioCaixaEletronico/test/CaixaEletronicoExtratoTest.java ExercicioCaixaEletronico/test/CaixaEletronicoFiltroTest.java
-java -cp out CaixaEletronicoCentavosTest
-java -cp out CaixaEletronicoFluxosTest
-java -cp out CaixaEletronicoPersistenciaTest
-java -cp out CaixaEletronicoExtratoTest
-java -cp out CaixaEletronicoFiltroTest
+javac -encoding UTF-8 -d out ExercicioCaixaEletronico/src/CaixaEletronico.java ExercicioCaixaEletronico/src/ArquivoConta.java ExercicioCaixaEletronico/src/CaixaWeb.java
+java -cp out CaixaEletronico ambos
+java -cp out CaixaEletronico terminal
+java -cp out CaixaEletronico web 8090
 ```
 
-Os testes não precisam de bibliotecas adicionais nem da opção `-ea`. Cada classe imprime `OK` quando termina com sucesso; uma falha encerra a execução com erro.
+Execute apenas um desses comandos de inicialização por vez para a mesma conta. Sem argumento, o modo é `ambos`. A pasta `ExercicioCaixaEletronico/web/` deve acompanhar os fontes; ela é servida pelo Java, sem instalar Node ou dependências externas.
 
-- **Precisão dos centavos:** deposita R$ 0,10 e R$ 0,20 e saca R$ 0,30, conferindo saldo, totais e quantidade de operações.
-- **43 cenários de fluxo:** verificam cancelamento por zero, confirmação negativa e fim da entrada; valores não numéricos, negativos, frações de centavo e valores excessivos; saldo insuficiente e zerado; correção de entradas; separador de milhar; identificação; consultas e encerramento pelo menu.
-- **Persistência:** 20 cenários verificam reabertura, precisão, histórico acumulado, cancelamentos, falhas de gravação, arquivo inválido, bloqueio de acesso simultâneo e duas execuções reais do programa.
-- **Extratos:** 6 cenários verificam conta vazia, valores e movimentações, exportações repetidas, dados recuperados, opção 9 e falha de gravação sem alteração da conta.
-- **Filtros:** 10 cenários verificam separação por tipo, números originais, totais, histórico vazio, ausência de um tipo, entradas inválidas, retorno ao menu, fim da entrada e dados recuperados sem regravar a conta.
-- **Sessão completa:** identifica a conta, deposita, saca, consulta saldo, histórico, dados e resumo, cancela uma saída e depois encerra. Confere o estado final e as mensagens esperadas.
+Para uma conta separada, use um caminho absoluto:
 
-## Escopo da primeira versão
+```sh
+java "-Dcaixa.arquivo=C:/caminho/minha-conta.properties" -cp out CaixaEletronico ambos
+```
 
-Esta versão é um projeto de estudo em Java no terminal, com uma única conta de exemplo. A identificação usa os dados informados acima e não possui senha. O saldo e as movimentações são mantidos em arquivo local entre as execuções.
+## Testes
 
-Banco de dados, várias contas e interface gráfica ficam como possíveis evoluções. Os arquivos `App.java`, `ForArray.java` e `joguinho.java` são exercícios separados; o ponto de entrada do caixa é `CaixaEletronico`.
+Execute `.\testar.cmd`. O script para na primeira falha e retorna código diferente de zero; uma execução aprovada termina com `Todos os testes passaram.` Não é necessário habilitar `-ea`.
+
+Os testes cobrem centavos exatos; cancelamentos e entradas inválidas; identificação e menus; persistência e arquivos inválidos; exportação e filtros; terminal numérico; API HTTP; proteção contra pedidos duplicados e saques concorrentes; compartilhamento e recuperação de dados entre interfaces. Os testes HTTP precisam permitir conexões locais.
+
+## Escopo
+
+Projeto de estudo com uma conta demonstrativa. Não oferece autenticação bancária, várias contas ou proteção contra adulteração intencional dos arquivos locais. O navegador fica restrito ao localhost. Os arquivos `App.java`, `ForArray.java` e `joguinho.java` são exercícios separados; inicie o caixa pelos comandos acima.

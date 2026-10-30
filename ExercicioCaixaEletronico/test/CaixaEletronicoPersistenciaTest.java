@@ -161,9 +161,9 @@ public class CaixaEletronicoPersistenciaTest {
 
     private static void testarProgramaCompleto(Path pasta) throws Exception {
         Path caminho = pasta.resolve("programa.properties");
-        String identificacao = "Lucas Rios de Souza Jordão\nSantander\n12345\n";
-        executarPrograma(caminho, identificacao + "3 10,50 S 0 SIM\n", 0);
-        executarPrograma(caminho, identificacao + "2 5,25 S 4 8 0 SIM\n", 0);
+        String identificacao = "1\n";
+        executarPrograma(caminho, identificacao + "3 1050 1 0 1\n", 0);
+        executarPrograma(caminho, identificacao + "2 525 1 4 8 0 1\n", 0);
         try (CaixaEletronico caixa = new CaixaEletronico(caminho)) {
             valor("50005.25", caixa.saldoFinal);
             verificar(caixa.movimentacoes.size() == 2, "Execuções separadas devem compartilhar a conta");
@@ -179,7 +179,7 @@ public class CaixaEletronicoPersistenciaTest {
     private static void executarPrograma(Path caminho, String entrada, int codigoEsperado) throws Exception {
         String executavelJava = java.nio.file.Paths.get(System.getProperty("java.home"), "bin", "java").toString();
         Process processo = new ProcessBuilder(executavelJava, "-Dfile.encoding=UTF-8", "-Dcaixa.arquivo=" + caminho,
-                "-cp", System.getProperty("java.class.path"), "CaixaEletronico")
+                "-cp", System.getProperty("java.class.path"), "CaixaEletronico", "terminal")
                 .redirectErrorStream(true).redirectOutput(caminho.resolveSibling(caminho.getFileName() + ".log").toFile())
                 .start();
         try (java.io.OutputStream entradaProcesso = processo.getOutputStream()) {

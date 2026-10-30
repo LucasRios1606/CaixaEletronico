@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Um caixa eletrônico de demonstração em Java, no terminal e no navegador. Sem dinheiro real.">
+  <meta name="theme-color" content="#143f38">
+  <title>Caixa Eletrônico | Laboratório Java</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/style.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#principal">Pular para o conteúdo</a>
+  <aside class="sidebar">
+    <a class="brand" href="#principal" aria-label="Caixa — início">
+      <span class="brand-mark" aria-hidden="true">c<span>.</span></span>
+      <span>caixa<span class="brand-caption">LABORATÓRIO JAVA</span></span>
+    </a>
+    <span class="nav-label">SUA EXPERIÊNCIA</span>
+    <nav aria-label="Navegação principal">
+      <a class="nav-link active" href="#principal"><span aria-hidden="true">▦</span> Visão geral</a>
+      <a class="nav-link" href="#extrato"><span aria-hidden="true">⇄</span> Movimentações</a>
+      <button class="nav-link" id="abrir-ajuda" type="button"><span aria-hidden="true">ⓘ</span> Como funciona</button>
+    </nav>
+    <div class="sidebar-note">
+      <span class="note-symbol" aria-hidden="true">&lt;/&gt;</span>
+      <strong>Um projeto. Duas interfaces.</strong>
+      <p>A mesma lógica Java, no terminal e no navegador.</p>
+      <span class="local-pill">LOCAL · SEM DINHEIRO REAL</span>
+    </div>
+    <div class="profile"><span class="avatar">LR</span><div><strong>Lucas Rios</strong><span>Conta de demonstração</span></div></div>
+  </aside>
+
+  <main id="principal" class="main" tabindex="-1">
+    <header class="page-header">
+      <div><p class="eyebrow">VISÃO GERAL</p><h1>Olá, Lucas<span>.</span></h1><p>Seu caixa, simples e sob controle.</p></div>
+      <div class="header-actions"><span class="demo-badge"><span aria-hidden="true">◌</span> Modo demonstração</span><span class="connection" id="conexao" role="status">Conectando…</span></div>
+    </header>
+    <div class="notice" id="aviso" role="status" hidden></div>
+
+    <div class="workspace">
+      <section class="account-column" aria-label="Resumo da conta">
+        <article class="balance-card">
+          <div class="card-top"><span>Saldo disponível</span><button id="alternar-saldo" class="eye-button" type="button" aria-label="Ocultar saldo" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
+          <p class="balance" id="saldo">—</p>
+          <div class="balance-context"><span class="available-dot"></span> Disponível para simular suas operações</div>
+          <div class="card-divider"></div>
+          <div class="account-holder"><div><span>TITULAR DEMONSTRATIVO</span><strong id="titular">Lucas Rios de Souza Jordão</strong></div><span class="card-monogram" aria-hidden="true">c.</span></div>
+          <div class="account-details"><span>Agência <strong>12345</strong></span><span>Conta <strong>0001-0</strong></span><span class="fictitious">Dados fictícios</span></div>
+        </article>
+        <div class="welcome-note"><span class="welcome-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 8h18v4H3zM5 12v9h14v-9M12 8v13"/><path d="M12 8H8a3 3 0 1 1 3-3l1 3Zm0 0h4a3 3 0 1 0-3-3l-1 3Z"/></svg></span><div><strong>Sua conta local</strong><p id="presente">Carregando saldo e histórico salvos.</p><small>Demonstração sem dinheiro real.</small></div></div>
+      </section>
+
+      <section class="operation-card" aria-labelledby="titulo-operacao">
+        <div class="section-kicker">VAMOS MOVIMENTAR?</div>
+        <h2 id="titulo-operacao">Faça uma operação</h2>
+        <div class="operation-switch" aria-label="Tipo de operação">
+          <button type="button" data-operacao="sacar" aria-pressed="true"><span aria-hidden="true">↗</span> Sacar</button>
+          <button type="button" data-operacao="depositar" aria-pressed="false"><span aria-hidden="true">↙</span> Depositar</button>
+        </div>
+        <form id="form-operacao" novalidate>
+          <label for="valor" id="rotulo-valor">Quanto você quer sacar?</label>
+          <div class="amount-field"><span aria-hidden="true">R$</span><input id="valor" name="valor" type="text" inputmode="decimal" autocomplete="off" maxlength="12" placeholder="0,00" aria-describedby="dica-valor erro-valor" required></div>
+          <p id="dica-valor" class="field-hint">Use vírgula ou ponto para os centavos. Ex.: 100,50.</p>
+          <p id="erro-valor" class="field-error" role="alert" hidden></p>
+          <div class="quick-values" aria-label="Valores sugeridos"><button type="button" data-valor="50">R$ 50</button><button type="button" data-valor="100">R$ 100</button><button type="button" data-valor="200">R$ 200</button></div>
+          <button class="primary-button" id="continuar" type="submit" disabled><span id="texto-continuar">Continuar com saque</span><span aria-hidden="true">→</span></button>
+        </form>
+        <p class="operation-footnote"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 8 3v6c0 5-8 9-8 9s-8-4-8-9V6l8-3Z"/><path d="m8 12 3 3 5-6"/></svg> Você confere os dados antes de confirmar.</p>
+      </section>
+    </div>
+
+    <section id="extrato" class="history-card" aria-labelledby="titulo-extrato">
+      <div class="history-header"><div><p class="section-kicker">SEU EXTRATO</p><h2 id="titulo-extrato">Histórico de movimentações <span id="quantidade" class="count">0</span></h2></div><button type="button" id="atualizar" class="subtle-button"><span aria-hidden="true">↻</span> Atualizar</button></div>
+      <div class="history-tools"><label for="filtro">Mostrar</label><select id="filtro"><option value="TODOS">Todas as operações</option><option value="SAQUE">Saques</option><option value="DEPOSITO">Depósitos</option></select><a class="subtle-button" href="/api/extrato" download="extrato.txt">Baixar extrato completo</a><span id="totais"></span></div><div class="empty-state" id="extrato-vazio"><span class="empty-icon" aria-hidden="true">⇄</span><h3>Nenhuma movimentação neste filtro</h3><p>Escolha outro filtro ou faça uma operação para começar.</p></div>
+      <div class="table-wrapper" id="tabela-container" hidden><table><thead><tr><th scope="col">Movimentação</th><th scope="col">Data e hora</th><th scope="col">Valor</th><th scope="col">Saldo após</th></tr></thead><tbody id="movimentos"></tbody></table></div>
+      <div class="history-footer"><span><span class="tiny-dot"></span> Histórico salvo no computador</span><span>Todas as movimentações confirmadas</span></div>
+    </section>
+    <footer class="page-footer"><span>Feito para aprender. Construído em Java.</span><span>CAIXA ELETRÔNICO · PROJETO DE LUCAS RIOS</span></footer>
+  </main>
+
+  <dialog id="confirmacao" aria-labelledby="titulo-confirmacao">
+    <div class="dialog-icon" aria-hidden="true">⇄</div><p class="section-kicker">QUASE LÁ</p><h2 id="titulo-confirmacao">Confira sua operação</h2><p class="dialog-description">Esta é uma movimentação fictícia, apenas para demonstração.</p>
+    <dl class="confirmation-summary"><div><dt>Operação</dt><dd id="confirmar-tipo"></dd></div><div><dt>Valor</dt><dd id="confirmar-valor"></dd></div><div><dt>Saldo previsto</dt><dd id="confirmar-saldo"></dd></div></dl>
+    <p id="erro-confirmacao" class="field-error" role="alert" hidden></p>
+    <div class="dialog-buttons"><button id="cancelar" class="secondary-button" type="button" autofocus>Voltar</button><button id="confirmar" class="primary-button" type="button">Confirmar operação</button></div>
+  </dialog>
+  <dialog id="ajuda" aria-labelledby="titulo-ajuda"><p class="section-kicker">COMO FUNCIONA</p><h2 id="titulo-ajuda">Seu laboratório de caixa</h2><div class="help-content"><p><strong>Saque e depósito:</strong> alteram apenas o saldo demonstrativo. Valores negativos, zerados e saques sem saldo são recusados.</p><p><strong>Terminal + navegador:</strong> no modo <code>ambos</code>, as duas interfaces compartilham a mesma conta. A página se atualiza automaticamente.</p><p><strong>Dados salvos:</strong> fechar a página ou encerrar o programa não apaga a conta. Uma conta nova começa com R$ 50.000,00 fictícios. O histórico continua nas próximas execuções.</p><p>Não há autenticação nem conexão com instituições financeiras. Use somente como projeto de estudo local.</p></div><button id="fechar-ajuda" class="primary-button" type="button">Entendi</button></dialog>
+</body>
+</html>

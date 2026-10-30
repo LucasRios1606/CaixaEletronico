@@ -15,20 +15,57 @@ import java.util.Scanner;
 public class CaixaEletronico implements AutoCloseable {
 
     public static void main(String[] args) {
+        String modo = args.length == 0 ? "ambos" : args[0];
+        int porta = 8081;
+        try {
+            if (args.length > 2 || !(modo.equals("terminal") || modo.equals("web") || modo.equals("ambos"))) {
+                throw new IllegalArgumentException();
+            }
+            if (args.length > 1) porta = Integer.parseInt(args[1]);
+            if (porta < 1 || porta > 65535) throw new IllegalArgumentException();
+        } catch (IllegalArgumentException erro) {
+            System.err.println("Uso: CaixaEletronico [terminal|web|ambos] [porta de 1 a 65535]");
+            System.exit(2);
+            return;
+        }
         Path caminho = Paths.get(System.getProperty("caixa.arquivo", "dados/conta.properties"));
         try (CaixaEletronico caixa = new CaixaEletronico(caminho)) {
-            if (caixa.identificadorUsuario()) {
+            caixa.modoNumerico = true;
+            try (CaixaWeb web = modo.equals("terminal") ? null : new CaixaWeb(caixa, porta)) {
+                if (web != null) {
+                    web.iniciar();
+                    Runtime.getRuntime().addShutdownHook(new Thread(web::close));
+                    String endereco = "http://localhost:" + web.porta() + "/";
+                    System.out.println("Navegador: " + endereco);
+                    if (Boolean.getBoolean("caixa.abrirNavegador") && java.awt.Desktop.isDesktopSupported()) {
+                        try {
+                            java.awt.Desktop.getDesktop().browse(java.net.URI.create(endereco));
+                        } catch (IOException | UnsupportedOperationException erro) {
+                            System.out.println("Abra o endereço acima no navegador.");
+                        }
+                    }
+                }
                 System.out.println("Dados da conta: " + caminho.toAbsolutePath().normalize());
-                caixa.menu();
+                if (modo.equals("web")) {
+                    System.out.println("Para encerrar o servidor, pressione Ctrl+C.");
+                    new java.util.concurrent.CountDownLatch(1).await();
+                } else if (caixa.identificadorUsuario()) {
+                    caixa.menu();
+                }
             }
-        } catch (IOException erro) {
-            System.err.println("Não foi possível abrir ou fechar o arquivo da conta: " + erro.getMessage());
-            System.err.println("Verifique o arquivo e as permissões antes de tentar novamente.");
+        } catch (java.net.BindException erro) {
+            System.err.println("A porta já está em uso. Escolha outra porta ou encerre a outra execução.");
             System.exit(1);
+        } catch (IOException erro) {
+            System.err.println("Não foi possível abrir ou fechar a conta: " + erro.getMessage());
+            System.exit(1);
+        } catch (InterruptedException erro) {
+            Thread.currentThread().interrupt();
         }
     }
 
     private ArquivoConta arquivo;
+    boolean modoNumerico;
     Path pastaExtratos = Paths.get("dados", "extratos");
 
     /** Conta em memória para exercícios e testes que não precisam gravar dados. */
@@ -70,24 +107,33 @@ public class CaixaEletronico implements AutoCloseable {
         movimentacoes = new ArrayList<>(estado.historico);
     }
 
+    private String formatar(BigDecimal valor) {
+        return NumberFormat.getCurrencyInstance(Locale.forLanguageTag("pt-BR")).format(valor);
+    }
+
     String nome = "Lucas Rios de Souza Jordão";
     String banco = "Santander";
     int agencia = 12345;
     BigDecimal saldo = new BigDecimal("50000.00");
-    BigDecimal saldoFinal = saldo;
+    volatile BigDecimal saldoFinal = saldo;
     BigDecimal totalSacado = BigDecimal.ZERO;
     BigDecimal totalDepositado = BigDecimal.ZERO;
     int quantidadeSaques = 0;
     int quantidadeDepositos = 0;
     Scanner scanner = new Scanner(System.in).useLocale(Locale.forLanguageTag("pt-BR"));
     NumberFormat moeda = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("pt-BR"));
-    List<String> movimentacoes = new ArrayList<>();
+    volatile List<String> movimentacoes = new ArrayList<>();
     DateTimeFormatter formatoDataHora = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 
     /**
     * O método identificadorUsuario foi criado para validar o usuário, o nome do banco e a agência.
     */
     public boolean identificadorUsuario() {
+        if (modoNumerico) {
+            System.out.println("Conta demonstrativa: " + nome + " | " + banco + " | Agência " + agencia);
+            System.out.println("1 - Acessar a conta | 0 - Encerrar");
+            return confirmarOperacao();
+        }
         String nomeInput = null;
         String bancoInput = null;
         int agenciaInput = 0;
@@ -185,7 +231,7 @@ public class CaixaEletronico implements AutoCloseable {
 
             switch (opcao) {
                 case 1:
-                System.out.println("Saldo atual de sua conta " + moeda.format(saldoFinal));
+                System.out.println("Saldo atual de sua conta " + formatar(saldoFinal));
                 break;
                 case 2:
                 sacar();
@@ -219,7 +265,7 @@ public class CaixaEletronico implements AutoCloseable {
                 break;
                 case 0:
                 System.out.println(arquivo == null ? "Conta em memória: os dados não serão salvos." : "As operações confirmadas já estão salvas.");
-                System.out.println("Deseja sair? Digite S ou SIM para confirmar ou N, NÃO ou NAO para voltar ao menu:");
+                System.out.println("Deseja sair? Digite " + (modoNumerico ? "1 para confirmar ou 0 para voltar ao menu:" : "S ou SIM para confirmar ou N, NÃO ou NAO para voltar ao menu:"));
                 if (!scanner.hasNext()) {
                     encerrarSessao();
                     return;
@@ -236,13 +282,13 @@ public class CaixaEletronico implements AutoCloseable {
         } while (true);
     }
 
-    private List<String> linhasTotaisMovimentacoes() {
+    private synchronized List<String> linhasTotaisMovimentacoes() {
         List<String> linhas = new ArrayList<>();
         linhas.add("Operações confirmadas: " + movimentacoes.size());
         linhas.add("Depósitos confirmados: " + quantidadeDepositos);
         linhas.add("Saques confirmados: " + quantidadeSaques);
-        linhas.add("Total depositado: " + moeda.format(totalDepositado));
-        linhas.add("Total sacado: " + moeda.format(totalSacado));
+        linhas.add("Total depositado: " + formatar(totalDepositado));
+        linhas.add("Total sacado: " + formatar(totalSacado));
         return linhas;
     }
 
@@ -260,7 +306,7 @@ public class CaixaEletronico implements AutoCloseable {
     }
 
     /** Gera uma cópia legível da conta, sem alterar saldo, histórico ou extratos anteriores. */
-    public Path exportarExtrato(Path pasta) throws IOException {
+    synchronized List<String> linhasExtrato() {
         LocalDateTime agora = LocalDateTime.now();
         List<String> linhas = new ArrayList<>();
         linhas.add("EXTRATO DO CAIXA ELETRÔNICO - SIMULAÇÃO");
@@ -278,10 +324,16 @@ public class CaixaEletronico implements AutoCloseable {
         }
         linhas.add("");
         linhas.add("Resumo acumulado da conta:");
-        linhas.add("Saldo inicial: " + moeda.format(saldo));
+        linhas.add("Saldo inicial: " + formatar(saldo));
         linhas.addAll(linhasTotaisMovimentacoes());
-        linhas.add("Saldo atual: " + moeda.format(saldoFinal));
-        linhas.add("Variação do saldo: " + moeda.format(saldoFinal.subtract(saldo)));
+        linhas.add("Saldo atual: " + formatar(saldoFinal));
+        linhas.add("Variação do saldo: " + formatar(saldoFinal.subtract(saldo)));
+        return linhas;
+    }
+
+    public synchronized Path exportarExtrato(Path pasta) throws IOException {
+        List<String> linhas = linhasExtrato();
+        LocalDateTime agora = LocalDateTime.now();
         Path diretorio = pasta.toAbsolutePath().normalize();
         Files.createDirectories(diretorio);
         String prefixo = "extrato-" + agora.format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss")) + "-";
@@ -299,12 +351,12 @@ public class CaixaEletronico implements AutoCloseable {
         return destino;
     }
 
-    private void mostrarResumoConta() {
+    private synchronized void mostrarResumoConta() {
         System.out.println("Resumo da conta:");
-        System.out.println("Saldo inicial: " + moeda.format(saldo));
+        System.out.println("Saldo inicial: " + formatar(saldo));
         mostrarTotaisMovimentacoes();
-        System.out.println("Saldo final: " + moeda.format(saldoFinal));
-        System.out.println("Variação do saldo: " + moeda.format(saldoFinal.subtract(saldo)));
+        System.out.println("Saldo final: " + formatar(saldoFinal));
+        System.out.println("Variação do saldo: " + formatar(saldoFinal.subtract(saldo)));
     }
 
     private void encerrarSessao() {
@@ -327,6 +379,12 @@ public class CaixaEletronico implements AutoCloseable {
     private boolean confirmarOperacao() {
         while (scanner.hasNext()) {
             String resposta = scanner.next();
+            if (modoNumerico) {
+                if (resposta.equals("1")) return true;
+                if (resposta.equals("0")) return false;
+                System.out.println("Opção inválida. Digite 1 para confirmar ou 0 para cancelar:");
+                continue;
+            }
             if (resposta.equalsIgnoreCase("S") || resposta.equalsIgnoreCase("SIM")) {
                 return true;
             }
@@ -339,35 +397,50 @@ public class CaixaEletronico implements AutoCloseable {
         return false;
     }
 
-    private boolean registrarMovimentacao(String tipo, BigDecimal valor, BigDecimal novoSaldo) {
-        boolean deposito = tipo.equals("Depósito");
+    private boolean registrarMovimentacao(String tipo, BigDecimal valor) {
+        try {
+            movimentar(tipo.equals("Depósito"), valor);
+            return true;
+        } catch (IllegalArgumentException erro) {
+            System.out.println(erro.getMessage());
+        } catch (IOException erro) {
+            System.out.println("Não foi possível salvar. Operação cancelada; saldo e histórico mantidos.");
+        }
+        return false;
+    }
+
+    /** Transação compartilhada: valida o saldo atual e salva antes de publicar o novo estado. */
+    public synchronized void movimentar(boolean deposito, BigDecimal valor) throws IOException {
+        if (valor == null || valor.signum() <= 0 || !Double.isFinite(valor.doubleValue())) {
+            throw new IllegalArgumentException("Informe um valor positivo válido.");
+        }
+        if (valor.stripTrailingZeros().scale() > 2) {
+            throw new IllegalArgumentException("Use no máximo duas casas decimais.");
+        }
+        if (!deposito && valor.compareTo(saldoFinal) > 0) {
+            throw new IllegalArgumentException("Saldo insuficiente para realizar esse saque.");
+        }
+        BigDecimal novoSaldo = deposito ? saldoFinal.add(valor) : saldoFinal.subtract(valor);
+        if (!Double.isFinite(novoSaldo.doubleValue())) {
+            throw new IllegalArgumentException("O saldo ultrapassa o limite permitido.");
+        }
+        String tipo = deposito ? "Depósito" : "Saque";
         List<String> historico = new ArrayList<>(movimentacoes);
-        String dataHora = LocalDateTime.now().format(formatoDataHora);
-        historico.add(dataHora + " | " + tipo + ": " + moeda.format(valor)
-                + " | Saldo anterior: " + moeda.format(saldoFinal)
-                + " | Saldo: " + moeda.format(novoSaldo));
+        historico.add(LocalDateTime.now().format(formatoDataHora) + " | " + tipo + ": " + formatar(valor)
+                + " | Saldo anterior: " + formatar(saldoFinal) + " | Saldo: " + formatar(novoSaldo));
         ArquivoConta.Estado estado = new ArquivoConta.Estado(saldo, novoSaldo,
                 deposito ? totalDepositado.add(valor) : totalDepositado,
                 deposito ? totalSacado : totalSacado.add(valor),
-                quantidadeDepositos + (deposito ? 1 : 0),
-                quantidadeSaques + (deposito ? 0 : 1), historico);
-        if (arquivo != null) {
-            try {
-                arquivo.salvar(estado);
-            } catch (IOException erro) {
-                System.out.println("Não foi possível salvar. Operação cancelada; saldo e histórico mantidos.");
-                return false;
-            }
-        }
+                quantidadeDepositos + (deposito ? 1 : 0), quantidadeSaques + (deposito ? 0 : 1), historico);
+        if (arquivo != null) arquivo.salvar(estado);
         aplicarEstado(estado);
-        return true;
     }
 
-    private void mostrarMovimentacao(int numero) {
+    private synchronized void mostrarMovimentacao(int numero) {
         System.out.println(numero + " - " + movimentacoes.get(numero - 1));
     }
 
-    private void mostrarUltimaMovimentacao() {
+    private synchronized void mostrarUltimaMovimentacao() {
         System.out.println("Última movimentação da conta:");
         if (movimentacoes.isEmpty()) {
             System.out.println("Nenhuma movimentação realizada.");
@@ -447,12 +520,12 @@ public class CaixaEletronico implements AutoCloseable {
             }
             System.out.println("Movimentações encontradas: " + encontrados);
             System.out.println(filtro == 1
-                    ? "Total sacado: " + moeda.format(totalSacado)
-                    : "Total depositado: " + moeda.format(totalDepositado));
+                    ? "Total sacado: " + formatar(totalSacado)
+                    : "Total depositado: " + formatar(totalDepositado));
         }
     }
 
-    public void mostrarHistorico() {
+    public synchronized void mostrarHistorico() {
         System.out.println("Histórico de movimentações da conta:");
         if (movimentacoes.isEmpty()) {
             System.out.println("Nenhuma movimentação realizada.");
@@ -461,29 +534,29 @@ public class CaixaEletronico implements AutoCloseable {
             mostrarMovimentacao(indice + 1);
         }
         mostrarTotaisMovimentacoes();
-        System.out.println("Saldo atual: " + moeda.format(saldoFinal));
-        System.out.println("Variação do saldo: " + moeda.format(saldoFinal.subtract(saldo)));
+        System.out.println("Saldo atual: " + formatar(saldoFinal));
+        System.out.println("Variação do saldo: " + formatar(saldoFinal.subtract(saldo)));
     }
 
     public void sacar() {
-        System.out.println("Saldo atual: " + moeda.format(saldoFinal));
+        System.out.println("Saldo atual: " + formatar(saldoFinal));
         if (saldoFinal.signum() == 0) {
             System.out.println("Seu saldo está zerado. Faça um depósito antes de realizar um saque.");
             return;
         }
 
         while (true) {
-            System.out.println(nome + " Informe o valor que deseja sacar (exemplo: 10,50) ou 0 para cancelar:");
+            System.out.println(modoNumerico ? "Valor do saque em centavos (1050 = R$ 10,50), ou 0 para cancelar:" : nome + " Informe o valor que deseja sacar (exemplo: 10,50) ou 0 para cancelar:");
             if (!scanner.hasNext()) {
                 System.out.println("Saque cancelado.");
                 return;
             }
-            if (!scanner.hasNextBigDecimal()) {
+            if (modoNumerico ? !scanner.hasNext("[0-9]+") : !scanner.hasNextBigDecimal()) {
                 scanner.next();
                 System.out.println("Informe um valor numérico para o saque.");
                 continue;
             }
-            BigDecimal saque = scanner.nextBigDecimal();
+            BigDecimal saque = modoNumerico ? new BigDecimal(scanner.next()).movePointLeft(2) : scanner.nextBigDecimal();
             if (!validarValorMonetario(saque, "saque")) {
                 continue;
             }
@@ -499,44 +572,44 @@ public class CaixaEletronico implements AutoCloseable {
             }
             if (saque.compareTo(saldoFinal) > 0) {
                 System.out.println("Saldo insuficiente para realizar o saque.");
-                System.out.println("Saldo disponível: " + moeda.format(saldoFinal));
-                System.out.println("Valor que falta: " + moeda.format(saque.subtract(saldoFinal)));
+                System.out.println("Saldo disponível: " + formatar(saldoFinal));
+                System.out.println("Valor que falta: " + formatar(saque.subtract(saldoFinal)));
                 continue;
             }
 
             BigDecimal novoSaldo = saldoFinal.subtract(saque);
-            System.out.println("Saldo após o saque, se confirmado: " + moeda.format(novoSaldo));
-            System.out.println("Confirmar saque de " + moeda.format(saque)
-            + "? Digite S ou SIM para confirmar ou N, NÃO ou NAO para cancelar:");
+            System.out.println("Saldo após o saque, se confirmado: " + formatar(novoSaldo));
+            System.out.println("Confirmar saque de " + formatar(saque)
+            + "? Digite " + (modoNumerico ? "1 para confirmar ou 0 para cancelar:" : "S ou SIM para confirmar ou N, NÃO ou NAO para cancelar:"));
             if (!confirmarOperacao()) {
                 System.out.println("Saque cancelado.");
                 return;
             }
-            if (!registrarMovimentacao("Saque", saque, novoSaldo)) {
+            if (!registrarMovimentacao("Saque", saque)) {
                 return;
             }
-            System.out.println("Saque realizado com sucesso, seu saldo atual é de: " + moeda.format(saldoFinal));
+            System.out.println("Saque realizado com sucesso, seu saldo atual é de: " + formatar(saldoFinal));
             System.out.println("Número da movimentação no histórico: " + movimentacoes.size());
             return;
         }
     }
 
     public void deposito() {
-        System.out.println("Saldo atual: " + moeda.format(saldoFinal));
+        System.out.println("Saldo atual: " + formatar(saldoFinal));
         BigDecimal novoSaldo;
         BigDecimal deposito;
         while (true) {
-            System.out.println("Informe o valor do depósito (exemplo: 10,50) ou 0 para cancelar:");
+            System.out.println(modoNumerico ? "Valor do depósito em centavos (1050 = R$ 10,50), ou 0 para cancelar:" : "Informe o valor do depósito (exemplo: 10,50) ou 0 para cancelar:");
             if (!scanner.hasNext()) {
                 System.out.println("Depósito cancelado.");
                 return;
             }
-            if (!scanner.hasNextBigDecimal()) {
+            if (modoNumerico ? !scanner.hasNext("[0-9]+") : !scanner.hasNextBigDecimal()) {
                 scanner.next();
                 System.out.println("Informe um valor numérico para o depósito.");
                 continue;
             }
-            deposito = scanner.nextBigDecimal();
+            deposito = modoNumerico ? new BigDecimal(scanner.next()).movePointLeft(2) : scanner.nextBigDecimal();
             if (!validarValorMonetario(deposito, "depósito")) {
                 continue;
             }
@@ -559,21 +632,21 @@ public class CaixaEletronico implements AutoCloseable {
             break;
         }
 
-        System.out.println("Saldo após o depósito, se confirmado: " + moeda.format(novoSaldo));
-        System.out.println("Confirmar depósito de " + moeda.format(deposito)
-        + "? Digite S ou SIM para confirmar ou N, NÃO ou NAO para cancelar:");
+        System.out.println("Saldo após o depósito, se confirmado: " + formatar(novoSaldo));
+        System.out.println("Confirmar depósito de " + formatar(deposito)
+        + "? Digite " + (modoNumerico ? "1 para confirmar ou 0 para cancelar:" : "S ou SIM para confirmar ou N, NÃO ou NAO para cancelar:"));
         if (!confirmarOperacao()) {
             System.out.println("Depósito cancelado.");
             return;
         }
 
-        if (!registrarMovimentacao("Depósito", deposito, novoSaldo)) {
+        if (!registrarMovimentacao("Depósito", deposito)) {
             return;
         }
-        System.out.println(nome + " seu depósito de " + moeda.format(deposito) + " foi realizado com sucesso!");
+        System.out.println(nome + " seu depósito de " + formatar(deposito) + " foi realizado com sucesso!");
         System.out.println("Número da movimentação no histórico: " + movimentacoes.size());
         System.out.println();
-        System.out.println("Saldo atual de sua conta " + moeda.format(saldoFinal));
+        System.out.println("Saldo atual de sua conta " + formatar(saldoFinal));
 
     }
 
